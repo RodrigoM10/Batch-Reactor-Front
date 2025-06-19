@@ -16,13 +16,17 @@ import { ReactionEquation } from "./reaction-equation"
 import type {
   EquilibriumMethod,
   VolumeCalculate,
+  ProductK,
   EnergyMode,
   IsothermicMode,
   OperationType,
   RateConstantMode,
   ReactionOrder,
+  ReactionType,
   ReactorParameters,
+  ExcessB,
 } from "@/hooks/use-reactor-parameters"
+import type { ValidationErrors } from "@/hooks/use-validation"
 
 interface ParametersFormProps {
   parameters: ReactorParameters
@@ -30,19 +34,28 @@ interface ParametersFormProps {
   isothermicMode: IsothermicMode
   energyMode: EnergyMode
   reactionOrder: ReactionOrder
+  reactionType: ReactionType
   equilibriumMethod: EquilibriumMethod
   volumeCalculate: VolumeCalculate
+  productK: ProductK
   rateConstantMode: RateConstantMode
+  excessB: ExcessB
+  
   onParameterChange: (param: keyof ReactorParameters, value: string) => void
   onOperationTypeChange: (value: OperationType) => void
   onIsothermicModeChange: (value: IsothermicMode) => void
   onEnergyModeChange: (value: EnergyMode) => void
   onReactionOrderChange: (value: ReactionOrder) => void
+  onReactionTypeChange: (value: ReactionType) => void
   onEquilibriumMethodChange: (value: EquilibriumMethod) => void
   onVolumeCalculateChange: (value: VolumeCalculate) => void
+  onProductKChange: (value: ProductK) => void
   onRateConstantModeChange: (value: RateConstantMode) => void
+  onExcessBChange: (value: ExcessB) => void
   onSubmit: () => void
   isLoading: boolean
+  errors: ValidationErrors
+  hasErrors: boolean
 }
 
 export function ParametersForm({
@@ -51,32 +64,46 @@ export function ParametersForm({
   isothermicMode,
   energyMode,
   reactionOrder,
+  reactionType,
   equilibriumMethod,
   volumeCalculate,
+  productK,
   rateConstantMode,
+  excessB,
   onParameterChange,
   onOperationTypeChange,
   onIsothermicModeChange,
   onEnergyModeChange,
   onReactionOrderChange,
+  onReactionTypeChange,
   onEquilibriumMethodChange,
+  onProductKChange,
+  onExcessBChange,
   onVolumeCalculateChange,
   onRateConstantModeChange,
   onSubmit,
   isLoading,
+  errors,
+  hasErrors,
 }: ParametersFormProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Parametros de la simulación</CardTitle>
-        <CardDescription>Configura los parametros para tu simulacion del Reactor Batch.</CardDescription>
+        <CardDescription>Configura los parametros para tu simulación del Reactor Batch.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           {/* Stoichiometry Section */}
-          <StoichiometrySection parameters={parameters} onParameterChange={onParameterChange} />
+          <StoichiometrySection 
+            parameters={parameters}
+            reactionType={reactionType}
+            onReactionTypeChange={onReactionTypeChange} 
+            onParameterChange={onParameterChange} 
+            errors={errors} />
 
           <ReactionEquation
+            reactionType={reactionType}
             coefficientA={parameters.coefficientA}
             coefficientB={parameters.coefficientB}
             coefficientC={parameters.coefficientC}
@@ -117,12 +144,14 @@ export function ParametersForm({
                 </Alert>
 
                 <IsothermicSection
+                  reactionOrder ={reactionOrder}
                   parameters={parameters}
                   isothermicMode={isothermicMode}
                   rateConstantMode={rateConstantMode}
                   onParameterChange={onParameterChange}
                   onIsothermicModeChange={onIsothermicModeChange}
                   onRateConstantModeChange={onRateConstantModeChange}
+                  errors={errors}
                 />
               </TabsContent>
 
@@ -138,6 +167,7 @@ export function ParametersForm({
                   energyMode={energyMode}
                   onParameterChange={onParameterChange}
                   onEnergyModeChange={onEnergyModeChange}
+                  errors={errors}
                 />
               </TabsContent>
             </Tabs>
@@ -147,14 +177,22 @@ export function ParametersForm({
 
           {/* Equilibrium Conditions Section */}
           <div className="space-y-4">
-            <h3 className="font-medium text-lg">Condiciones de Equilibrio</h3>
-            <EquilibriumSection
-              parameters={parameters}
-              operationType={operationType}
-              equilibriumMethod={equilibriumMethod}
-              onParameterChange={onParameterChange}
-              onEquilibriumMethodChange={onEquilibriumMethodChange}
-            />
+            { reactionType ==="reversible" ? 
+              <>
+              <h3 className="font-medium text-lg">Condiciones de Equilibrio</h3>
+                <EquilibriumSection
+                  parameters={parameters}
+                  operationType={operationType}
+                  equilibriumMethod={equilibriumMethod}
+                  onParameterChange={onParameterChange}
+                  onEquilibriumMethodChange={onEquilibriumMethodChange}
+                  errors={errors}
+                />
+              </> :
+              <>
+              </> 
+            }
+            
           </div>
 
           <Separator />
@@ -166,10 +204,23 @@ export function ParametersForm({
             onParameterChange={onParameterChange}
             volumeCalculate={volumeCalculate}
             onVolumeCalculateChange={onVolumeCalculateChange}
+            productK={productK}
+            excessB={excessB}
+            onProductKChange={onProductKChange}
+            onExcessBChange={onExcessBChange}
+            errors={errors}
           />
 
+          {hasErrors && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Errores de Validación</AlertTitle>
+              <AlertDescription>Por favor corriga los parametros antes de correr el simulador.</AlertDescription>
+            </Alert>
+          )}
+
           <div className="flex justify-end">
-            <Button onClick={onSubmit} className="flex items-center gap-2" disabled={isLoading}>
+          <Button onClick={onSubmit} className="flex items-center gap-2" disabled={isLoading || hasErrors}>
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -178,7 +229,7 @@ export function ParametersForm({
               ) : (
                 <>
                   <Send className="h-4 w-4" />
-                  Enviar al Backend
+                  Simular Reactor Batch
                 </>
               )}
             </Button>

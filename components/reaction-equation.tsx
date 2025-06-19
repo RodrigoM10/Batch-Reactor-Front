@@ -1,13 +1,15 @@
 import { Label } from "@/components/ui/label"
+import { ReactionType } from "@/hooks/use-reactor-parameters"
 
 interface ReactionEquationProps {
+  reactionType: ReactionType
   coefficientA: string
   coefficientB: string
   coefficientC: string
   coefficientD: string
 }
 
-export function ReactionEquation({ coefficientA, coefficientB, coefficientC, coefficientD }: ReactionEquationProps) {
+export function ReactionEquation({reactionType, coefficientA, coefficientB, coefficientC, coefficientD }: ReactionEquationProps) {
   const generateReactionEquation = () => {
     const coefficients = {
       A: Number.parseFloat(coefficientA),
@@ -43,8 +45,10 @@ export function ReactionEquation({ coefficientA, coefficientB, coefficientC, coe
     const reactantStr = reactants.join(" + ")
     const productStr = products.join(" + ")
 
+    const finalReaction = reactionType === "reversible" ? `${reactantStr} ⇌ ${productStr}` :`${reactantStr} → ${productStr}`
+
     // Return the full equation
-    return `${reactantStr} → ${productStr}`
+    return   finalReaction             
   }
 
   return (

@@ -3,14 +3,26 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
+import { Button } from "@/components/ui/button"
+import { Download, AlertCircle } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+
+// Importar componentes modulares
+import { DataTable } from "./charts/data-table"
+import { ConversionChart } from "./charts/conversion-chart"
+import { ConcentrationChart } from "./charts/concentration-chart"
+import { TemperatureChart } from "./charts/temperature-chart"
+import { HeatRatesChart } from "./charts/heat-rates-chart"
+import { InverseRateChart } from "./charts/inverse-rate-chart"
+import { SimulationSummary } from "./simulation-summary"
+import { ConversionVsTemperatureChart } from "./charts/conversion-vs-temperature-chart"
 
 interface ResultsDisplayProps {
   operationType: "isothermic" | "non-isothermic"
   isothermicMode: "x" | "t"
   energyMode: "adiabatic" | "icq"
   reactionOrder: "1" | "2"
+  reactionType: "reversible" | "irreversible"
   equilibriumMethod: "vanthoff" | "gibbs" | "direct"
   results?: any // Resultados del backend
 }
@@ -20,208 +32,191 @@ export default function ResultsDisplay({
   isothermicMode,
   energyMode,
   reactionOrder,
+  reactionType,
   equilibriumMethod,
   results,
 }: ResultsDisplayProps) {
-  const [activeTab, setActiveTab] = useState("data")
+  const [activeTab, setActiveTab] = useState("conversion")
 
-  // Generar datos de simulación
-  const simulationData = results
-    ? processBackendResults(results)
-    : generateMockData(operationType, energyMode, reactionOrder)
+  // Verificar si hay datos válidos
+  const hasValidData = results && results.data && Array.isArray(results.data) && results.data.length > 0
 
-  function processBackendResults(backendResults: any) {
-    // Si no hay resultados o no tienen el formato esperado, devolver datos simulados
-    if (!backendResults || !backendResults.data || !Array.isArray(backendResults.data)) {
-      return generateMockData(operationType, energyMode, reactionOrder)
-    }
-
-    // Procesar los datos del backend
-    return backendResults.data.map((point: any) => ({
-      time: point.time || 0,
-      conversion: Number.parseFloat(point.conversion || 0).toFixed(4),
-      concentration: Number.parseFloat(point.concentration || 0).toFixed(4),
-      temperature: Number.parseFloat(point.temperature || 298.15).toFixed(2),
-    }))
+  // Si no hay datos válidos, mostrar mensaje
+  if (!hasValidData) {
+    return (
+      <Card className="h-full">
+        <CardHeader>
+          <CardTitle>Simulation Results</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center h-[500px]">
+          <Alert className="max-w-md">
+            <AlertCircle className="h-5 w-5" />
+            <AlertTitle>No hay datos disponibles</AlertTitle>
+            <AlertDescription>
+              No se han recibido datos del backend. Por favor, ejecute la simulación para ver los resultados.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
+    )
   }
 
-  // Mock data generator (usado cuando no hay resultados del backend)
-  function generateMockData(
-    operationType: "isothermic" | "non-isothermic",
-    energyMode: "adiabatic" | "icq",
-    reactionOrder: "1" | "2",
-  ) {
-    const timePoints = Array.from({ length: 20 }, (_, i) => i * 5) // 0 to 95 minutes
+  // Procesar los datos del backend
+  const simulationData = results.data
 
-    return timePoints.map((time) => {
-      // Base conversion calculation (simplified model)
-      // Different calculation based on reaction order
-      let conversion
-      if (reactionOrder === "1") {
-        conversion = 1 - Math.exp(-0.05 * time)
-      } else {
-        // Second order reaction
-        conversion = (0.05 * time) / (1 + 0.05 * time)
-      }
+  // Extraer datos adicionales del backend
+  const additionalData = results?.additionalData || {}
+  const equilibriumConversion = additionalData.finalConversion || 0.95
 
-      // Base concentration
-      const concentration = 1.0 * (1 - conversion)
+  // Función para exportar datos a CSV
+  const exportToCSV = () => {
+    // Cabeceras del CSV
+    const headers = Object.keys(simulationData[0]).join(",")
 
-      // Temperature varies in non-isothermic mode
-      let temperature = 298.15
-      if (operationType === "non-isothermic") {
-        if (energyMode === "adiabatic") {
-          // Temperature rises in adiabatic mode
-          temperature += 20 * conversion
-        } else {
-          // Temperature rises then falls in ICQ mode
-          temperature += 15 * conversion * Math.exp(-0.03 * time)
-        }
-      }
+    // Filas de datos
+    const rows = simulationData.map((row:any) => Object.values(row).join(",")).join("\n")
 
-      return {
-        time,
-        conversion: conversion.toFixed(4),
-        concentration: concentration.toFixed(4),
-        temperature: temperature.toFixed(2),
-      }
-    })
+    // Contenido completo del CSV
+    const csvContent = `${headers}\n${rows}`
+
+    // Crear un blob y un enlace de descarga
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.setAttribute("href", url)
+    link.setAttribute("download", "reactor_simulation_results.csv")
+    link.style.visibility = "hidden"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  // Determinar qué pestañas mostrar según el modo
+  const tabsToShow = [
+    { id: "conversion", label: "Conversión" },
+    { id: "data", label: "Datos" },
+    { id: "concentration", label: "Concentración" },
+  ]
+
+  // Añadir pestañas específicas según el modo
+  if (operationType === "non-isothermic") {
+    tabsToShow.push({ id: "temperature", label: "Temperatura" })
+    tabsToShow.push({ id: "temp-conversion", label: "Temp vs Conv" })
+
+    if (energyMode === "icq") {
+      tabsToShow.push({ id: "heat", label: "Tasas de Calor" })
+    }
+  } else {
+    // Modo isotérmico
+    if (additionalData.volume) {
+      tabsToShow.push({ id: "inverse-rate", label: "Tasa Inversa" })
+    }
+  }
+
+  // Determinar la clase de grid basada en el número de tabs
+  const getTabsGridClass = () => {
+    const count = tabsToShow.length
+    switch (count) {
+      case 1:
+        return "grid-cols-1"
+      case 2:
+        return "grid-cols-2"
+      case 3:
+        return "grid-cols-3"
+      case 4:
+        return "grid-cols-4"
+      case 5:
+        return "grid-cols-5"
+      case 6:
+        return "grid-cols-6"
+      default:
+        return "grid-cols-3"
+    }
   }
 
   return (
     <Card className="h-full">
-      <CardHeader>
-        <CardTitle>Simulation Results</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Resultados de la Simulación</CardTitle>
+        <Button variant="outline" size="sm" onClick={exportToCSV} className="flex items-center gap-2">
+          <Download className="h-4 w-4" />
+          Exportar CSV
+        </Button>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="data" onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-3 mb-4">
-            <TabsTrigger value="data">Data</TabsTrigger>
-            <TabsTrigger value="conversion">Conversion</TabsTrigger>
-            <TabsTrigger value="temperature">Temperature</TabsTrigger>
+        <Tabs defaultValue="conversion" onValueChange={setActiveTab} className="w-full">
+          <TabsList className={`${getTabsGridClass()} w-full mb-6`}>
+            {tabsToShow.map((tab) => (
+              <TabsTrigger key={tab.id} value={tab.id}>
+                {tab.label}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
-          <TabsContent value="data" className="space-y-4">
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Time (min)</TableHead>
-                    <TableHead>Conversion</TableHead>
-                    <TableHead>Concentration (mol/L)</TableHead>
-                    <TableHead>Temperature (K)</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {simulationData.slice(0, 10).map((row:any, index:any) => (
-                    <TableRow key={index}>
-                      <TableCell>{row.time}</TableCell>
-                      <TableCell>{row.conversion}</TableCell>
-                      <TableCell>{row.concentration}</TableCell>
-                      <TableCell>{row.temperature}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+          <div className="mt-6 pt-4">
+            <TabsContent value="conversion" className="mt-0">
+              <div className="mx-auto max-w-6xl">
+                <ConversionChart data={simulationData} equilibriumConversion={equilibriumConversion} />
+              </div>
+            </TabsContent>
 
-            <div className="text-sm text-gray-500 text-center">Showing 10 of {simulationData.length} data points</div>
-          </TabsContent>
+            <TabsContent value="data" className="mt-0">
+              <div className="mx-auto max-w-6xl">
+                <DataTable data={simulationData} operationType={operationType} energyMode={energyMode} />
+              </div>
+            </TabsContent>
 
-          <TabsContent value="conversion">
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={simulationData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="time" label={{ value: "Time (min)", position: "insideBottomRight", offset: -5 }} />
-                  <YAxis label={{ value: "Conversion", angle: -90, position: "insideLeft" }} domain={[0, 1]} />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="conversion"
-                    name="Conversion (X)"
-                    stroke="#8884d8"
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </TabsContent>
+            <TabsContent value="concentration" className="mt-0">
+              <div className="mx-auto max-w-6xl">
+                <ConcentrationChart data={simulationData} />
+              </div>
+            </TabsContent>
 
-          <TabsContent value="temperature">
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={simulationData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="time" label={{ value: "Time (min)", position: "insideBottomRight", offset: -5 }} />
-                  <YAxis
-                    label={{ value: "Temperature (K)", angle: -90, position: "insideLeft" }}
-                    domain={operationType === "isothermic" ? [295, 300] : [295, 320]}
-                  />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="temperature"
-                    name="Temperature (K)"
-                    stroke="#ff7300"
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </TabsContent>
+            {operationType === "non-isothermic" && (
+              <TabsContent value="temperature" className="mt-0">
+                <div className="mx-auto max-w-6xl">
+                  <TemperatureChart data={simulationData} energyMode={energyMode} />
+                </div>
+              </TabsContent>
+            )}
+
+            {operationType === "non-isothermic" && (
+              <TabsContent value="temp-conversion" className="mt-0">
+                <div className="mx-auto max-w-6xl">
+                  <ConversionVsTemperatureChart data={simulationData} />
+                </div>
+              </TabsContent>
+            )}
+
+            {/* Pestaña para Heat Rates en modo ICQ */}
+            {operationType === "non-isothermic" && energyMode === "icq" && (
+              <TabsContent value="heat" className="mt-0">
+                <div className="mx-auto max-w-6xl">
+                  <HeatRatesChart data={simulationData} />
+                </div>
+              </TabsContent>
+            )}
+
+            {/* Pestaña para Inverse Rate en modo isotérmico cuando se calcula el volumen */}
+            {operationType === "isothermic" && additionalData.volume && (
+              <TabsContent value="inverse-rate" className="mt-0">
+                <div className="mx-auto max-w-6xl">
+                  <InverseRateChart data={simulationData} />
+                </div>
+              </TabsContent>
+            )}
+          </div>
         </Tabs>
 
-        <div className="mt-4 p-3 bg-gray-50 rounded-md text-sm">
-          <p className="font-medium">Simulation Summary:</p>
-          <ul className="list-disc list-inside mt-2 space-y-1">
-            <li>
-              Reaction: <span className="font-medium">A + 2B → 3C</span>
-            </li>
-            <li>
-              Reaction Order:{" "}
-              <span className="font-medium">{reactionOrder === "1" ? "First Order" : "Second Order"}</span>
-            </li>
-            <li>
-              Operation Mode:{" "}
-              <span className="font-medium">{operationType === "isothermic" ? "Isothermic" : "Non-Isothermic"}</span>
-            </li>
-            {operationType === "isothermic" && (
-              <>
-                <li>
-                  Calculation Based On:{" "}
-                  <span className="font-medium">{isothermicMode === "x" ? "Conversion (X)" : "Time (t)"}</span>
-                </li>
-                <li>
-                  Equilibrium Method:{" "}
-                  <span className="font-medium">
-                    {equilibriumMethod === "vanthoff"
-                      ? "Van't Hoff Equation"
-                      : equilibriumMethod === "gibbs"
-                        ? "Gibbs Energy"
-                        : "Direct Ke Input"}
-                  </span>
-                </li>
-              </>
-            )}
-            {operationType === "non-isothermic" && (
-              <li>
-                Energy Mode:{" "}
-                <span className="font-medium">{energyMode === "adiabatic" ? "Adiabatic" : "Heat Exchanger (ICQ)"}</span>
-              </li>
-            )}
-            <li>
-              Final Conversion:{" "}
-              <span className="font-medium">{simulationData[simulationData.length - 1].conversion}</span>
-            </li>
-            <li>
-              Final Temperature:{" "}
-              <span className="font-medium">{simulationData[simulationData.length - 1].temperature} K</span>
-            </li>
-          </ul>
-        </div>
+        <SimulationSummary
+          operationType={operationType}
+          isothermicMode={isothermicMode}
+          energyMode={energyMode}
+          reactionOrder={reactionOrder}
+          reactionType={reactionType}
+          equilibriumMethod={equilibriumMethod}
+          additionalData={additionalData}
+        />
       </CardContent>
     </Card>
   )
