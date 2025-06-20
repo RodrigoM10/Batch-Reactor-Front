@@ -185,7 +185,7 @@ export function NonIsothermicSection({
 
           <div>
             <Label htmlFor="heatTransferCoefficient" className={errors.heatTransferCoefficient ? "text-red-500" : ""}>
-            Coeficiente de Transferencia de Calor: U[W/m²·K]
+            Coeficiente de Transferencia de Calor: U[cal/min.m².K]
               </Label>
               <Input
                  id="heatTransferCoefficient"
@@ -211,7 +211,7 @@ export function NonIsothermicSection({
 
           <div>
             <Label htmlFor="heatCapacityRef" className={errors.heatCapacityRef ? "text-red-500" : ""}>
-              Capacidad Calorifica del Refrigerante: Cp_ref[cal/mol.k]
+              Calor especifico del refrigerante: Cp_ref[cal/kg.k]
               </Label>
               <Input
                  id="heatCapacityRef"
@@ -224,7 +224,7 @@ export function NonIsothermicSection({
 
           <div>
               <Label htmlFor="fluidRateRef" className={errors.fluidRateRef ? "text-red-500" : ""}>
-              Velocidad Masica del Refrigerante: m_c[mol/s]
+              Velocidad Masica del Refrigerante: m_c[kg/min]
               </Label>
               <Input
                  id="fluidRateRef"

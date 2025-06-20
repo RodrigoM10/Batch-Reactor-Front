@@ -43,7 +43,7 @@ export function CommonParametersSection({
         {/* Campo para Concentración Inicial de A */}
         <div>
           <Label htmlFor="initialConcentration" className={errors.initialConcentration ? "text-red-500" : ""}>
-          Concentración Inicial de A [mol/L] o [kmol/m³]
+          Concentración Inicial de A [mol/L] 
           </Label> {/* <-- Cambiado aquí */}
           <Input
           id="initialConcentration"
@@ -61,7 +61,7 @@ export function CommonParametersSection({
               htmlFor="initialConcentrationB"
               className={errors.initialConcentrationB ? "text-red-500" : ""}
             >
-              Concentración Inicial de B [mol/L] o [kmol/m³]
+              Concentración Inicial de B [mol/L] 
             </Label>
             <Input
               id="initialConcentrationB"
@@ -91,7 +91,7 @@ export function CommonParametersSection({
         {/* Campo para Concentración Inicial de C */}
         <div>
           <Label htmlFor="initialConcentrationC" className={errors.initialConcentrationC ? "text-red-500" : ""}>
-          Concentración Inicial de C [mol/L] o [kmol/m³]
+          Concentración Inicial de C [mol/L] 
           </Label> {/* <-- Cambiado aquí */}
           <Input
           id="initialConcentrationC"
@@ -105,7 +105,7 @@ export function CommonParametersSection({
         {/* Campo para Concentración Inicial de D */}
         <div>
           <Label htmlFor="initialConcentrationD" className={errors.initialConcentrationD ? "text-red-500" : ""}>
-          Concentración Inicial de D [mol/L] o [kmol/m³]
+          Concentración Inicial de D [mol/L] 
           </Label> {/* <-- Cambiado aquí */}
           <Input
           id="initialConcentrationD"
@@ -172,7 +172,7 @@ export function CommonParametersSection({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="productionOfk" className={errors.productionOfk ? "text-red-500" : ""}>
-                       Producción del Producto k: P_k [kg/min]
+                       Producción del Producto k [kg/min]
                       </Label>
                       <Input
                       id="productionOfk"
@@ -184,7 +184,7 @@ export function CommonParametersSection({
                   </div>
                   <div>
                       <Label htmlFor="cdmTime" className={errors.cdmTime ? "text-red-500" : ""}>
-                      Tiempo de Muerto, Carga y Descarga: Tmcd [min]
+                      Tiempo de Muerto, Carga y Descarga [min]
                       </Label>
                       <Input
                       id="cdmTime"
@@ -197,7 +197,7 @@ export function CommonParametersSection({
                   
                   <div>
                       <Label htmlFor="molarMassK" className={errors.molarMassK ? "text-red-500" : ""}>
-                      Masa Molar del Producto k: M_k [g/mol] o [kg/kmol]
+                      Masa Molar del Producto k [kg/kmol]
                       </Label>
                       <Input
                       id="molarMassK"

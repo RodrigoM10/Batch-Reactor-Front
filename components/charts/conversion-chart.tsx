@@ -66,7 +66,7 @@ export function ConversionChart({ data, equilibriumConversion }: ConversionChart
             <ReferenceLine
               y={equilibriumConversion}
               label={{
-                value: `Equilibrio: ${equilibriumConversion.toFixed(4)}`,
+                value: `${equilibriumConversion.toFixed(4)}`,
                 position: "insideTopRight",
                 fill: "red",
                 fontSize: 12,

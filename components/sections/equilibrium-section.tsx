@@ -51,7 +51,7 @@ export function EquilibriumSection({
           <SelectContent>
             <SelectItem value="vanthoff">Ecuación de Van't Hoff</SelectItem>
             <SelectItem value="gibbs">Energía de Gibbs</SelectItem>
-            {operationType === "isothermic" && <SelectItem value="direct">Ingresar Manualmente Ke</SelectItem>}
+            {operationType === "isothermic" && <SelectItem value="direct">Ingresar Manualmente Keq</SelectItem>}
           </SelectContent>
         </Select>
 
