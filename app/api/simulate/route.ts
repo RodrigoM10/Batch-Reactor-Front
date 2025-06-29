@@ -14,8 +14,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 export async function POST(request: Request) {
   try {
     const data: Record<string, unknown> = await request.json()
-    const backendUrl = API_BASE
-
+    const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}/simulate`;
     if (!backendUrl) {
       console.error("Error: PYTHON_BACKEND_URL no está configurada")
       return NextResponse.json(
