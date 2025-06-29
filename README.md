@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚛️ Batch Reactor Front
 
-## Getting Started
+Interfaz gráfica desarrollada en Next.js + React para el simulador de reactores batch (TAD - Tanque Agitado Discontinuo). Permite ingresar los parámetros de simulación, elegir el modo de operación (isotérmico o no isotérmico) y visualizar los resultados mediante gráficos interactivos.
 
-First, run the development server:
+## 🚀 ¿Qué hace esta interfaz?
 
+- Recibe parámetros cinéticos, estequiométricos y de operación del usuario
+- Se comunica con el backend vía API (FastAPI)
+- Muestra los resultados de la simulación en gráficos dinámicos
+- Brinda una experiencia de uso clara y amigable
+
+## 🔗 Repositorio del backend
+
+Este frontend está diseñado para funcionar junto al backend disponible aquí:  
+👉 [Batch-Reactor-Back](https://github.com/RodrigoM10/Batch-Reactor-Simulate)
+
+Asegurate de que el backend esté ejecutándose en `http://localhost:8000` (o la URL configurada).
+
+## ⚙️ Cómo ejecutar el proyecto
+
+1. Cloná el repositorio:
+```bash
+git clone https://github.com/RodrigoM10/Batch-Reactor-Front.git
+cd Batch-Reactor-Front
+```
+2. Instalá las dependencias:
+```bash
+npm install
+```
+3. Ejecutá el servidor de desarrollo:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+4. Abrí tu navegador en http://localhost:3000
+   
+🧪 Simulación
+Desde la interfaz podés:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Seleccionar modo isotérmico o no isotérmico
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Ingresar tipo de reacción, orden, constantes, temperatura, etc.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Visualizar resultados: conversión, temperatura, concentraciones, volumen del reactor y más
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🧑‍💻 Autor
+Rodrigo Mendoza
+Ingeniero Químico - Desarrollador
+🔗 [LinkedIn](https://www.linkedin.com/in/rodrigo-mendoza-b8b6931a4/)
