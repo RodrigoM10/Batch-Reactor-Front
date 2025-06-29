@@ -4,23 +4,29 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FormError } from "@/components/ui/form-error"
-import { EnergyMode, ReactorParameters } from "@/hooks/use-reactor-parameters"
+import { EnergyMode, ReactionOrder, ReactorParameters, UnitMeasure } from "@/hooks/use-reactor-parameters"
 import { Info } from "lucide-react"
 import type { ValidationErrors } from "@/hooks/use-validation"
 
 interface NonIsothermicSectionProps {
+  reactionOrder: ReactionOrder
   parameters: ReactorParameters
   energyMode: EnergyMode
+  unitMeasure: UnitMeasure
   onParameterChange: (param: keyof ReactorParameters, value: string) => void
   onEnergyModeChange: (value: EnergyMode) => void
+  onUnitMeasureChange: (value: UnitMeasure) => void
   errors: ValidationErrors
 }
 
 export function NonIsothermicSection({
   parameters,
   energyMode,
+  unitMeasure,
+  reactionOrder,
   onParameterChange,
   onEnergyModeChange,
+  onUnitMeasureChange,
   errors,
 }: NonIsothermicSectionProps) {
   return (
@@ -129,8 +135,22 @@ export function NonIsothermicSection({
       </div>
       <div>
               <Label htmlFor="preExponentialFactorT" className={errors.preExponentialFactorT ? "text-red-500" : ""}>
-              Factor Pre-Exponencial: A
-                </Label>
+                  Factor Pre-Exponencial: A
+                  <div >
+                        <Select
+                          value={unitMeasure}
+                          onValueChange={(value) => onUnitMeasureChange(value as UnitMeasure)}
+                           >
+                           <SelectTrigger>
+                            <SelectValue placeholder="Unidad de medida" />
+                           </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="min">{reactionOrder=== '1' ? "[1/min]" : "[l/mol.min]"}</SelectItem>
+                                <SelectItem value="seg">{reactionOrder=== '1' ? "[1/s]" : "[l/mol.s]"}</SelectItem>
+                             </SelectContent>
+                        </Select>
+                    </div>
+              </Label>
                 <Input
                     id="preExponentialFactorT"
                     value={parameters.preExponentialFactorT}
@@ -185,7 +205,7 @@ export function NonIsothermicSection({
 
           <div>
             <Label htmlFor="heatTransferCoefficient" className={errors.heatTransferCoefficient ? "text-red-500" : ""}>
-            Coeficiente de Transferencia de Calor: U[cal/min.m².K]
+            Coeficiente de Transferencia de Calor: U[cal/{unitMeasure}.m².K]
               </Label>
               <Input
                  id="heatTransferCoefficient"
@@ -224,7 +244,7 @@ export function NonIsothermicSection({
 
           <div>
               <Label htmlFor="fluidRateRef" className={errors.fluidRateRef ? "text-red-500" : ""}>
-              Velocidad Masica del Refrigerante: m_c[kg/min]
+              Velocidad Masica del Refrigerante: m_c[kg/{unitMeasure}]
               </Label>
               <Input
                  id="fluidRateRef"

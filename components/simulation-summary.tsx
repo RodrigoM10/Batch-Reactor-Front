@@ -8,6 +8,7 @@ interface SimulationSummaryProps {
    reactionType: "reversible" | "irreversible"
   equilibriumMethod: "vanthoff" | "gibbs" | "direct"
   additionalData: any
+   unitMeasure:"min"|"seg"
 }
 
 export function SimulationSummary({
@@ -18,6 +19,7 @@ export function SimulationSummary({
   reactionType,
   equilibriumMethod,
   additionalData,
+  unitMeasure
 }: SimulationSummaryProps) {
   const finalTemperature = additionalData.finalTemperature || 298.15
 
@@ -86,7 +88,7 @@ export function SimulationSummary({
         {additionalData.reactionRate && (
           <li>
             Velocidad de Reacción Final:{" "}
-            <span className="font-medium">{additionalData.reactionRate.toFixed(6)} [mol/L·min]</span>
+            <span className="font-medium">{additionalData.reactionRate.toFixed(6)} [mol/L·({unitMeasure})]</span>
           </li>
         )}
         {additionalData.message && (

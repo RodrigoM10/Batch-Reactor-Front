@@ -17,6 +17,7 @@ import type {
   EquilibriumMethod,
   VolumeCalculate,
   ProductK,
+  UnitMeasure,
   EnergyMode,
   IsothermicMode,
   OperationType,
@@ -38,6 +39,7 @@ interface ParametersFormProps {
   equilibriumMethod: EquilibriumMethod
   volumeCalculate: VolumeCalculate
   productK: ProductK
+  unitMeasure: UnitMeasure
   rateConstantMode: RateConstantMode
   excessB: ExcessB
   
@@ -50,6 +52,7 @@ interface ParametersFormProps {
   onEquilibriumMethodChange: (value: EquilibriumMethod) => void
   onVolumeCalculateChange: (value: VolumeCalculate) => void
   onProductKChange: (value: ProductK) => void
+  onUnitMeasureChange: (value: UnitMeasure) => void
   onRateConstantModeChange: (value: RateConstantMode) => void
   onExcessBChange: (value: ExcessB) => void
   onSubmit: () => void
@@ -68,6 +71,7 @@ export function ParametersForm({
   equilibriumMethod,
   volumeCalculate,
   productK,
+  unitMeasure,
   rateConstantMode,
   excessB,
   onParameterChange,
@@ -78,6 +82,7 @@ export function ParametersForm({
   onReactionTypeChange,
   onEquilibriumMethodChange,
   onProductKChange,
+  onUnitMeasureChange,
   onExcessBChange,
   onVolumeCalculateChange,
   onRateConstantModeChange,
@@ -148,9 +153,11 @@ export function ParametersForm({
                   parameters={parameters}
                   isothermicMode={isothermicMode}
                   rateConstantMode={rateConstantMode}
+                  unitMeasure={unitMeasure}
                   onParameterChange={onParameterChange}
                   onIsothermicModeChange={onIsothermicModeChange}
                   onRateConstantModeChange={onRateConstantModeChange}
+                  onUnitMeasureChange={onUnitMeasureChange}
                   errors={errors}
                 />
               </TabsContent>
@@ -164,9 +171,12 @@ export function ParametersForm({
 
                 <NonIsothermicSection
                   parameters={parameters}
+                  reactionOrder ={reactionOrder}
                   energyMode={energyMode}
+                  unitMeasure={unitMeasure}
                   onParameterChange={onParameterChange}
                   onEnergyModeChange={onEnergyModeChange}
+                  onUnitMeasureChange={onUnitMeasureChange}
                   errors={errors}
                 />
               </TabsContent>

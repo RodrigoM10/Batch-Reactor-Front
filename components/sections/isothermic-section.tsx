@@ -6,18 +6,21 @@ import { Switch } from "@/components/ui/switch"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Info } from "lucide-react"
 import { FormError } from "@/components/ui/form-error"
-import type { IsothermicMode, RateConstantMode, ReactionOrder, ReactorParameters } from "@/hooks/use-reactor-parameters"
+import type { IsothermicMode, RateConstantMode, ReactionOrder, ReactorParameters, UnitMeasure } from "@/hooks/use-reactor-parameters"
 import { AlertDescription } from "../ui/alert"
 import type { ValidationErrors } from "@/hooks/use-validation"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface IsothermicSectionProps {
   reactionOrder: ReactionOrder
   parameters: ReactorParameters
   isothermicMode: IsothermicMode
   rateConstantMode: RateConstantMode
+  unitMeasure: UnitMeasure
   onParameterChange: (param: keyof ReactorParameters, value: string) => void
   onIsothermicModeChange: (value: IsothermicMode) => void
   onRateConstantModeChange: (value: RateConstantMode) => void
+  onUnitMeasureChange: (value: UnitMeasure) => void
   errors: ValidationErrors
 }
 
@@ -25,10 +28,12 @@ export function IsothermicSection({
   reactionOrder,
   parameters,
   isothermicMode,
+  unitMeasure,
   rateConstantMode,
   onParameterChange,
   onIsothermicModeChange,
   onRateConstantModeChange,
+  onUnitMeasureChange,
   errors,
 }: IsothermicSectionProps) {
   return (
@@ -77,10 +82,27 @@ export function IsothermicSection({
         </RadioGroup>
 
         {rateConstantMode === "direct" ? (
-          <div className="mt-2">
+          <div className="mt-2 ">
             <Label htmlFor="directRateConstant" className={errors.directRateConstant ? "text-red-500" : ""}>
-            Constante de Velocidad: k {reactionOrder=== '1' ? "[1/min]" : "[l/mol.min]"}
+              <div className="pb-3">
+                Constante de Velocidad: k 
+              </div>
+                    <div className="mb-4">
+                      <Select
+                          value={unitMeasure}
+                          onValueChange={(value) => onUnitMeasureChange(value as UnitMeasure)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Unidad de medida" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="min">{reactionOrder=== '1' ? "[1/min]" : "[l/mol.min]"}</SelectItem>
+                            <SelectItem value="seg">{reactionOrder=== '1' ? "[1/s]" : "[l/mol.s]"}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                    </div>
             </Label>
+
             <Input
               id="directRateConstant"
               value={parameters.directRateConstant}
@@ -92,10 +114,27 @@ export function IsothermicSection({
           </div>
         ) : (
           <div className="space-y-4 mt-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
               <div>
                 <Label htmlFor="preExponentialFactor" className={errors.preExponentialFactor ? "text-red-500" : ""}>
-                Factor Pre-Exponencial: A
+                  <div>
+                  Factor Pre-Exponencial: A
+                  </div>
+                  <div >
+                      <Select
+                          value={unitMeasure}
+                          onValueChange={(value) => onUnitMeasureChange(value as UnitMeasure)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Unidad de medida" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="min">{reactionOrder=== '1' ? "[1/min]" : "[l/mol.min]"}</SelectItem>
+                            <SelectItem value="seg">{reactionOrder=== '1' ? "[1/s]" : "[l/mol.s]"}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                    </div>
+
                 </Label>
                 <Input
                   id="preExponentialFactor"
@@ -106,7 +145,7 @@ export function IsothermicSection({
                  <FormError message={errors.preExponentialFactor} />
                  <p className="text-xs text-gray-500 mt-1">El Factor Pre-Exponencial debe ser mayor a 0.</p>
               </div>
-              <div>
+              <div className="pt-5">
                 <Label htmlFor="activationEnergy" className={errors.activationEnergy ? "text-red-500" : ""}>
                 Energía de Activación E [cal/mol]
                 </Label>
@@ -160,7 +199,7 @@ export function IsothermicSection({
       ) : (
         <div>
           <Label htmlFor="reactionTime" className={errors.reactionTime ? "text-red-500" : ""}>
-          Tiempo de Reacción: Tr [s]
+          Tiempo de Reacción: Tr [{unitMeasure}]
           </Label>
           <Input
             id="reactionTime"

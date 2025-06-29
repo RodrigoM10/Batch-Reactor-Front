@@ -4,9 +4,10 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 interface InverseRateChartProps {
   data: any[]
+  unitMeasure:"min"|"seg"
 }
 
-export function InverseRateChart({ data }: InverseRateChartProps) {
+export function InverseRateChart({ data, unitMeasure}: InverseRateChartProps) {
   // Verificar si hay datos de inverse rate
   const hasInverseRateData = data.some((d) => d.inverseRate !== undefined && d.inverseRate > 0)
 
@@ -40,14 +41,16 @@ export function InverseRateChart({ data }: InverseRateChartProps) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="conversion"
-            label={{ value: "Conversion (X)", position: "insideBottomRight", offset: -5 }}
+            label={{ value: "Conversion (X)", position: "insideBottomRight", offset: -5, fontWeight: "bold" }}
             domain={[0, 1]}
             tickFormatter={(value) => value.toFixed(2)}
+            style={{ fontWeight: "bold" }}
           />
           <YAxis
-            label={{ value: "1/r (L·min/mol)", angle: -90, position: "insideLeft" }}
+            label={{ value: `1/r [L·${unitMeasure}/mol]`, angle: -90, position: "insideLeft", fontWeight: "bold" }}
             domain={[0, yMax]}
             tickFormatter={(value) => value.toFixed(1)}
+            style={{ fontWeight: "bold" }}
           />
           <Tooltip
             formatter={(value: number) => value.toFixed(4)}

@@ -5,11 +5,12 @@ import { useMemo } from "react"
 
 interface DataTableProps {
   data: any[]
+  unitMeasure: "min" | "seg"
   operationType: "isothermic" | "non-isothermic"
   energyMode: "adiabatic" | "icq"
 }
 
-export function DataTable({ data, operationType, energyMode }: DataTableProps) {
+export function DataTable({ data, operationType, energyMode, unitMeasure }: DataTableProps) {
   // Seleccionar puntos significativos de los datos
   const significantPoints = useMemo(() => {
     if (!data || data.length === 0) return []
@@ -76,13 +77,6 @@ export function DataTable({ data, operationType, energyMode }: DataTableProps) {
         }
     }
 
-    // Si todavía tenemos más de maxTargetCount puntos (lo cual es poco probable con la lógica actual,
-    // pero es una red de seguridad), podríamos aplicar otra lógica para reducirlos,
-    // por ejemplo, priorizando los puntos con mayor cambio entre sí.
-    // Por simplicidad en esta iteración, nos enfocaremos en asegurar el mínimo y limitar el máximo
-    // por la lógica de añadir puntos. Si la búsqueda de significativos excede el máximo,
-    // ya rompimos el bucle.
-
     // Convertir el Map a un array y ordenar por tiempo
     const finalPoints = Array.from(result.values()).sort((a, b) => a.time - b.time);
 
@@ -102,44 +96,46 @@ export function DataTable({ data, operationType, energyMode }: DataTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center font-medium">Tiempo (min)</TableHead>
-              <TableHead className="text-center font-medium">[A] (mol/L)</TableHead>
-              <TableHead className="text-center font-medium">[B] (mol/L)</TableHead>
-              <TableHead className="text-center font-medium">[C] (mol/L)</TableHead>
-              <TableHead className="text-center font-medium">[D] (mol/L)</TableHead>
+              {/* Aplicar text-base o text-lg para aumentar el tamaño de la fuente en los encabezados */}
+              <TableHead className="text-center font-medium text-base md:text-lg">Tiempo ({unitMeasure})</TableHead>
+              <TableHead className="text-center font-medium text-base md:text-lg">[A] (mol/L)</TableHead>
+              <TableHead className="text-center font-medium text-base md:text-lg">[B] (mol/L)</TableHead>
+              <TableHead className="text-center font-medium text-base md:text-lg">[C] (mol/L)</TableHead>
+              <TableHead className="text-center font-medium text-base md:text-lg">[D] (mol/L)</TableHead>
               {operationType === "non-isothermic" && (
-                <TableHead className="text-center font-medium">Temperatura (K)</TableHead>
+                <TableHead className="text-center font-medium text-base md:text-lg">Temperatura (K)</TableHead>
               )}
               {operationType === "non-isothermic" && energyMode === "icq" && (
-                <TableHead className="text-center font-medium">Temp. Enfriamiento (K)</TableHead>
+                <TableHead className="text-center font-medium text-base md:text-lg">Temp. Enfriamiento (K)</TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {significantPoints.map((row, index) => (
               <TableRow key={index}>
-                <TableCell className="text-center">
+                {/* Aplicar text-sm o text-base para aumentar el tamaño de la fuente en las celdas */}
+                <TableCell className="text-center text-sm md:text-base">
                   {typeof row.time === "number" ? row.time.toFixed(2) : row.time}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="text-center text-sm md:text-base">
                   {typeof row.concentrationA === "number" ? row.concentrationA.toFixed(4) : "0.0000"}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="text-center text-sm md:text-base">
                   {typeof row.concentrationB === "number" ? row.concentrationB.toFixed(4) : "0.0000"}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="text-center text-sm md:text-base">
                   {typeof row.concentrationC === "number" ? row.concentrationC.toFixed(4) : "0.0000"}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="text-center text-sm md:text-base">
                   {typeof row.concentrationD === "number" ? row.concentrationD.toFixed(4) : "0.0000"}
                 </TableCell>
                 {operationType === "non-isothermic" && (
-                  <TableCell className="text-center">
+                  <TableCell className="text-center text-sm md:text-base">
                     {typeof row.temperature === "number" ? row.temperature.toFixed(2) : row.temperature}
                   </TableCell>
                 )}
                 {operationType === "non-isothermic" && energyMode === "icq" && (
-                  <TableCell className="text-center">
+                  <TableCell className="text-center text-sm md:text-base">
                     {row.coolingTemperature ? row.coolingTemperature.toFixed(2) : "N/A"}
                   </TableCell>
                 )}
@@ -149,7 +145,7 @@ export function DataTable({ data, operationType, energyMode }: DataTableProps) {
         </Table>
       </div>
 
-      <div className="text-sm text-gray-500 text-center">
+      <div className="text-sm text-gray-500 text-center"> {/* Puedes ajustar esta también si quieres */}
         Mostrando {significantPoints.length} puntos de {data.length} puntos totales
       </div>
     </div>

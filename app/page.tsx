@@ -28,6 +28,7 @@ export default function BatchReactorSimulator() {
     equilibriumMethod,
     volumeCalculate,
     productK,
+    unitMeasure,
     excessB,
     rateConstantMode,
     parameters,
@@ -38,6 +39,7 @@ export default function BatchReactorSimulator() {
     setReactionType,
     setEquilibriumMethod,
     setProductK,
+    setUnitMeasure,
     setExcessB,
     setVolumeCalculate,
     setRateConstantMode,
@@ -159,12 +161,14 @@ export default function BatchReactorSimulator() {
             equilibriumMethod={equilibriumMethod}
             volumeCalculate={volumeCalculate}
             productK={productK}
+            unitMeasure={unitMeasure}
             excessB={excessB}
             rateConstantMode={rateConstantMode}
             onParameterChange={handleParameterChange}
             onReactionOrderChange={setReactionOrder}
             onReactionTypeChange={setReactionType}
             onProductKChange={setProductK}
+            onUnitMeasureChange={setUnitMeasure}
             onExcessBChange={setExcessB}
             
             onOperationTypeChange={(value) => {
@@ -205,6 +209,7 @@ export default function BatchReactorSimulator() {
               reactionType={reactionType}
               equilibriumMethod={equilibriumMethod}
               results={simulationResults}
+              unitMeasure={unitMeasure}
             />
           ) : (
             <Card className="flex items-center justify-center py-12">              <CardContent className="text-center p-6">

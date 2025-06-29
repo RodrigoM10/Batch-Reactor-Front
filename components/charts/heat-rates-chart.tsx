@@ -1,31 +1,35 @@
 "use client"
 
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts"
 
 interface HeatRatesChartProps {
-  data: any[]
+  data: Array<{ 
+    time: number; 
+    heatGenerated?: number; 
+    heatRemoved?: number
+   }>;
+   unitMeasure:"min" | "seg"
 }
 
-export function HeatRatesChart({ data }: HeatRatesChartProps) {
-  // Procesar los datos para asegurar que tenemos las tasas de calor
+export function HeatRatesChart({ data,unitMeasure }: HeatRatesChartProps) {
+  // Procesar datos
   const processedData = useMemo(() => {
     if (!data || data.length === 0) return []
-
-    // Verificar si ya tenemos datos de tasas de calor
-    const hasHeatRateData = data.some((d) => d.heatGenerated !== undefined && d.heatRemoved !== undefined)
-
-    if (hasHeatRateData) {
-      console.log("Datos de tasas de calor encontrados:", data.slice(0, 3))
-      return data
-    }
-
-    // Si no hay datos, devolver array vacío
-    console.warn("No se encontraron datos de tasas de calor en los datos proporcionados")
-    return []
+    const hasHeatRateData = data.some(d => d.heatGenerated !== undefined && d.heatRemoved !== undefined)
+    if (!hasHeatRateData) return []
+    return data
   }, [data])
 
-  // Si no hay datos, mostrar mensaje
   if (processedData.length === 0) {
     return (
       <div className="h-[500px] flex items-center justify-center">
@@ -34,64 +38,121 @@ export function HeatRatesChart({ data }: HeatRatesChartProps) {
     )
   }
 
-  // Determinar el rango de valores para el eje Y
-  const allValues = processedData.flatMap((d) => [d.heatGenerated || 0, d.heatRemoved || 0])
+  // Zoom en eje X (tiempo)
+  const times = useMemo(() => processedData.map(d => d.time), [processedData])
+  const initialMin = Math.min(...times)
+  const initialMax = Math.max(...times)
+  const [xMin, setXMin] = useState<number>(initialMin)
+  const [xMax, setXMax] = useState<number>(initialMax)
+  const [xInterval, setXInterval] = useState<number>(parseFloat(((initialMax - initialMin) / 5).toFixed(2)))
+
+  // Generar ticks de tiempo
+  const xTicks = xInterval > 0
+    ? Array.from(
+        { length: Math.floor((xMax - xMin) / xInterval) + 1 },
+        (_, i) => Number((xMin + i * xInterval).toFixed(2))
+      )
+    : undefined
+
+  // Filtrar datos según rango de tiempo
+  const filtered = useMemo(
+    () => processedData.filter(d => d.time >= xMin && d.time <= xMax),
+    [processedData, xMin, xMax]
+  )
+
+  // Dominio Y para calor
+  const allValues = useMemo(
+    () => filtered.flatMap(d => [d.heatGenerated || 0, d.heatRemoved || 0]),
+    [filtered]
+  )
   const minValue = Math.min(...allValues)
   const maxValue = Math.max(...allValues)
-  const yDomain = [
-    minValue < 0 ? Math.floor(minValue * 1.1) : 0, // Si hay valores negativos, ajustar el mínimo
-    Math.ceil(maxValue * 1.1), // Añadir un 10% de margen al máximo
+  const yDomain: [number, number] = [
+    minValue < 0 ? Math.floor(minValue * 1.1) : 0,
+    Math.ceil(maxValue * 1.1),
   ]
 
-  // Formatear el tiempo para el tooltip
-  const formatTime = (value: number) => {
-    if (value < 0.1) {
-      return `${(value * 60).toFixed(1)} s`
-    }
-    return `${value.toFixed(1)} min`
-  }
+  // Formateo tooltip
+  const formatTime = (v: number) => v < 0.1 ? `${(v * 60).toFixed(1)}` : `${v.toFixed(1)}`
 
   return (
-    <div className="h-[500px]">
+    <div>
       <h3 className="text-xl font-semibold text-center mb-4">Tasas de Generación y Remoción de Calor</h3>
-      <ResponsiveContainer width="100%" height="90%">
-        <AreaChart data={processedData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="time"
-            label={{ value: "Tiempo (min)", position: "insideBottomRight", offset: -5 }}
-            tickFormatter={(value) => value.toFixed(1)}
+      <div className="h-[500px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={filtered} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="time"
+              type="number"
+              domain={[xMin, xMax]}
+              ticks={xTicks}
+              label={{ value: `Tiempo (${unitMeasure})`, position: 'insideBottomRight', offset: -5, fontWeight: "bold" }}
+              tickFormatter={v => v.toFixed(1)}
+              style={{ fontWeight: "bold" }}
+            />
+            <YAxis
+              domain={yDomain}
+              label={{ value: `Tasa de Calor (cal/${unitMeasure})`, angle: -90, position: 'insideLeft', fontWeight: "bold" }}
+              tickFormatter={v => v.toFixed(0)}
+              style={{ fontWeight: "bold" }}
+            />
+            <Tooltip
+              formatter={(v: number) => `${v.toFixed(2)} cal/${unitMeasure}`}
+              labelFormatter={l => `Tiempo: ${formatTime(l)} ${unitMeasure}`}
+            />
+            <Legend />
+            <Area
+              type="monotone"
+              dataKey="heatGenerated"
+              name="Calor Generado (Qg)"
+              stroke="#ff7300"
+              fill="#ff7300"
+              fillOpacity={0.3}
+              strokeWidth={2}
+            />
+            <Area
+              type="monotone"
+              dataKey="heatRemoved"
+              name="Calor Removido (Qr)"
+              stroke="#0088fe"
+              fill="#0088fe"
+              fillOpacity={0.3}
+              strokeWidth={2}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+      {/* Controles de zoom en tiempo */}
+      <div className="mb-4 mt-4 flex space-x-4 items-center justify-end">
+        <label className="flex flex-col text-sm">
+          Mín Tiempo
+          <input
+            type="number"
+            value={xMin}
+            onChange={e => setXMin(+e.target.value)}
+            className="ml-1 border rounded px-2 py-1 w-24"
           />
-          <YAxis
-            label={{ value: "Tasa de Calor (cal/s)", angle: -90, position: "insideLeft" }}
-            domain={yDomain}
-            tickFormatter={(value) => value.toFixed(0)}
+        </label>
+        <label className="flex flex-col text-sm">
+          Máx Tiempo
+          <input
+            type="number"
+            value={xMax}
+            onChange={e => setXMax(+e.target.value)}
+            className="ml-1 border rounded px-2 py-1 w-24"
           />
-          <Tooltip
-            formatter={(value: number) => value.toFixed(2) + " cal/s"}
-            labelFormatter={(label: number) => `Tiempo: ${formatTime(label)}`}
+        </label>
+        <label className="flex flex-col text-sm">
+          Intervalo
+          <input
+            type="number"
+            value={xInterval}
+            onChange={e => setXInterval(+e.target.value)}
+            className="ml-1 border rounded px-2 py-1 w-24"
           />
-          <Legend />
-          <Area
-            type="monotone"
-            dataKey="heatGenerated"
-            name="Calor Generado (Qg)"
-            stroke="#ff7300"
-            fill="#ff7300"
-            fillOpacity={0.3}
-            strokeWidth={2}
-          />
-          <Area
-            type="monotone"
-            dataKey="heatRemoved"
-            name="Calor Removido (Qr)"
-            stroke="#0088fe"
-            fill="#0088fe"
-            fillOpacity={0.3}
-            strokeWidth={2}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+        </label>
+      </div>
     </div>
   )
 }

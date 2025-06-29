@@ -24,10 +24,12 @@ interface ResultsDisplayProps {
   reactionOrder: "1" | "2"
   reactionType: "reversible" | "irreversible"
   equilibriumMethod: "vanthoff" | "gibbs" | "direct"
+  unitMeasure: "min"| "seg"
   results?: any // Resultados del backend
 }
 
 export default function ResultsDisplay({
+  unitMeasure,
   operationType,
   isothermicMode,
   energyMode,
@@ -156,26 +158,30 @@ export default function ResultsDisplay({
           <div className="mt-6 pt-4">
             <TabsContent value="conversion" className="mt-0">
               <div className="mx-auto max-w-6xl">
-                <ConversionChart data={simulationData} equilibriumConversion={equilibriumConversion} />
+                <ConversionChart 
+                data={simulationData} 
+                equilibriumConversion={equilibriumConversion} 
+                unitMeasure={unitMeasure}
+                />
               </div>
             </TabsContent>
 
             <TabsContent value="data" className="mt-0">
               <div className="mx-auto max-w-6xl">
-                <DataTable data={simulationData} operationType={operationType} energyMode={energyMode} />
+                <DataTable data={simulationData} operationType={operationType} energyMode={energyMode} unitMeasure={unitMeasure} />
               </div>
             </TabsContent>
 
             <TabsContent value="concentration" className="mt-0">
               <div className="mx-auto max-w-6xl">
-                <ConcentrationChart data={simulationData} />
+                <ConcentrationChart data={simulationData} unitMeasure={unitMeasure} />
               </div>
             </TabsContent>
 
             {operationType === "non-isothermic" && (
               <TabsContent value="temperature" className="mt-0">
                 <div className="mx-auto max-w-6xl">
-                  <TemperatureChart data={simulationData} energyMode={energyMode} />
+                  <TemperatureChart data={simulationData} energyMode={energyMode} unitMeasure={unitMeasure} />
                 </div>
               </TabsContent>
             )}
@@ -192,7 +198,7 @@ export default function ResultsDisplay({
             {operationType === "non-isothermic" && energyMode === "icq" && (
               <TabsContent value="heat" className="mt-0">
                 <div className="mx-auto max-w-6xl">
-                  <HeatRatesChart data={simulationData} />
+                  <HeatRatesChart data={simulationData} unitMeasure={unitMeasure} />
                 </div>
               </TabsContent>
             )}
@@ -201,7 +207,7 @@ export default function ResultsDisplay({
             {operationType === "isothermic" && additionalData.volume && (
               <TabsContent value="inverse-rate" className="mt-0">
                 <div className="mx-auto max-w-6xl">
-                  <InverseRateChart data={simulationData} />
+                  <InverseRateChart data={simulationData} unitMeasure={unitMeasure} />
                 </div>
               </TabsContent>
             )}
@@ -216,6 +222,7 @@ export default function ResultsDisplay({
           reactionType={reactionType}
           equilibriumMethod={equilibriumMethod}
           additionalData={additionalData}
+          unitMeasure={unitMeasure}
         />
       </CardContent>
     </Card>

@@ -7,6 +7,7 @@ export type OperationType = "isothermic" | "non-isothermic"
 export type IsothermicMode = "x" | "t"
 export type VolumeCalculate = "s" | "n"
 export type ProductK = "C" | "D"
+export type UnitMeasure = "min" | "seg"
 export type ExcessB = boolean
 export type EnergyMode = "adiabatic" | "icq"
 export type ReactionOrder = "1" | "2"
@@ -88,6 +89,7 @@ export interface ReactorState {
   equilibriumMethod: EquilibriumMethod
   volumeCalculate: VolumeCalculate
   productK: ProductK
+  unitMeasure: UnitMeasure
   excessB: ExcessB
   rateConstantMode: RateConstantMode
   parameters: ReactorParameters
@@ -184,6 +186,7 @@ const defaultState: ReactorState = {
   equilibriumMethod: "vanthoff",
   volumeCalculate: "s",
   productK: "C",
+  unitMeasure: "min",
   excessB: false,
   rateConstantMode: "direct",
   parameters: defaultParameters,
@@ -194,7 +197,7 @@ export function useReactorParameters() {
   const [state, setState] = useState<ReactorState>(defaultState)
 
   // Destructurar el estado para facilitar su uso
-  const { operationType, isothermicMode, energyMode, reactionOrder, reactionType, equilibriumMethod, volumeCalculate, productK, excessB, rateConstantMode, parameters } =
+  const { operationType, isothermicMode, energyMode, reactionOrder, reactionType, equilibriumMethod, volumeCalculate, productK, unitMeasure, excessB, rateConstantMode, parameters } =
     state
 
   // Cargar parámetros desde localStorage al montar el componente
@@ -241,6 +244,9 @@ export function useReactorParameters() {
   const setProductK = (value: ProductK) => {
     setState((prev) => ({ ...prev, productK: value }))
   }
+    const setUnitMeasure = (value: UnitMeasure) => {
+    setState((prev) => ({ ...prev, unitMeasure: value }))
+  }
   const setExcessB = (value: ExcessB) => {
     setState((prev) => ({ ...prev, excessB: value }))
   }
@@ -281,6 +287,7 @@ export function useReactorParameters() {
     isothermicMode,
     volumeCalculate,
     productK,
+    unitMeasure,
     excessB,
     energyMode,
     reactionOrder,
@@ -292,6 +299,7 @@ export function useReactorParameters() {
     setIsothermicMode,
     setVolumeCalculate,
     setProductK,
+    setUnitMeasure,
     setExcessB,
     setEnergyMode,
     setReactionOrder,
