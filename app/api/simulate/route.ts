@@ -8,10 +8,13 @@ import {
   BackendData,
 } from "./interfaces/backend" 
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
+
 export async function POST(request: Request) {
   try {
     const data: Record<string, unknown> = await request.json()
-    const backendUrl = "http://127.0.0.1:8000/simulate"
+    const backendUrl = API_BASE
 
     if (!backendUrl) {
       console.error("Error: PYTHON_BACKEND_URL no está configurada")
