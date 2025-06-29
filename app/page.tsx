@@ -101,8 +101,8 @@ export default function BatchReactorSimulator() {
 }, [simulationResults])
 
   return (
-    <main className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">Simulador de Reactor Batch (TAC)</h1>
+    <div className="container mx-auto py-8 px-4">
+      <h1 className="text-3xl font-bold mb-6 text-center">Simulador de Reactor Batch (TAD)</h1>
 
       {equilibriumData && (
         <EquilibriumWarningDialog
@@ -212,6 +212,6 @@ export default function BatchReactorSimulator() {
           )}
         </div>
       </div>
-    </main>
+    </div>
   )
 }
