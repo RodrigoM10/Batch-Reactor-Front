@@ -9,7 +9,6 @@ import { ValidationErrors } from "@/hooks/use-validation"
 import { FormError } from "../ui/form-error"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-
 interface CommonParametersSectionProps {
   parameters: ReactorParameters
   operationType: OperationType
@@ -40,11 +39,10 @@ export function CommonParametersSection({
       <h3 className="font-medium text-lg">Parametros de Concentración de Componentes</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Campo para Concentración Inicial de A */}
         <div>
           <Label htmlFor="initialConcentration" className={errors.initialConcentration ? "text-red-500" : ""}>
           Concentración Inicial de A [mol/L] 
-          </Label> {/* <-- Cambiado aquí */}
+          </Label>
           <Input
           id="initialConcentration"
           value={parameters.initialConcentration}
@@ -54,7 +52,6 @@ export function CommonParametersSection({
           <FormError message={errors.initialConcentration} />
         </div>
 
-    {/* Campo para Concentración Inicial de B y Switch de Exceso */}
         <div className="flex items-end gap-2">
           <div className="flex-grow">
             <Label
@@ -88,11 +85,11 @@ export function CommonParametersSection({
             />
           </div>
         </div>
-        {/* Campo para Concentración Inicial de C */}
+
         <div>
           <Label htmlFor="initialConcentrationC" className={errors.initialConcentrationC ? "text-red-500" : ""}>
           Concentración Inicial de C [mol/L] 
-          </Label> {/* <-- Cambiado aquí */}
+          </Label>
           <Input
           id="initialConcentrationC"
           value={parameters.initialConcentrationC}
@@ -102,11 +99,10 @@ export function CommonParametersSection({
           <FormError message={errors.initialConcentrationC} />
         </div>
 
-        {/* Campo para Concentración Inicial de D */}
         <div>
           <Label htmlFor="initialConcentrationD" className={errors.initialConcentrationD ? "text-red-500" : ""}>
           Concentración Inicial de D [mol/L] 
-          </Label> {/* <-- Cambiado aquí */}
+          </Label>
           <Input
           id="initialConcentrationD"
           value={parameters.initialConcentrationD}
@@ -116,7 +112,6 @@ export function CommonParametersSection({
           <FormError message={errors.initialConcentrationD} />
         </div>
 
-        {/* Parámetros específicos para modo no isotérmico (Concentración de Inerte) */}
         {operationType === "non-isothermic" && (
          <div>
           <Label htmlFor="inertConcentration" className={errors.inertConcentration ? "text-red-500" : ""}>
@@ -131,15 +126,13 @@ export function CommonParametersSection({
           <FormError message={errors.inertConcentration} />
         </div>
         )}
-
       </div>
 
-        {/* Parámetros específicos para modo isotérmico */}
         {operationType === "isothermic" && (
             <div>
-              <Label>Cálculo del Volumen del Reactor </Label> {/* <-- Acentuado "Cálculo" */}
+              <Label>Cálculo del Volumen del Reactor </Label>
               <div className="my-2">
-              <AlertDescription >La simulación en modo Isotérmico permite calcular el volumen del reactor para determinada producción de un producto deseado.</AlertDescription> {/* <-- Acentuado "Isotérmico" */}
+              <AlertDescription>La simulación en modo Isotérmico permite calcular el volumen del reactor para determinada producción de un producto deseado.</AlertDescription>
               </div>
               <div className="flex items-center space-x-4 mt-2 mb-3">
                 <div className="flex items-center space-x-2">
@@ -149,7 +142,7 @@ export function CommonParametersSection({
                     onCheckedChange={(checked) => onVolumeCalculateChange(checked ? "s" : "n")}
                   />
                   <Label htmlFor="calc-vol" className="cursor-pointer">
-                    {volumeCalculate === "s" ? "Calcular Volumen" : "Sin Cálculo de Volumen"} {/* <-- Acentuado "Cálculo" */}
+                    {volumeCalculate === "s" ? "Calcular Volumen" : "Sin Cálculo de Volumen"}
                   </Label>
                 </div>
               </div>
@@ -161,7 +154,7 @@ export function CommonParametersSection({
                           onValueChange={(value) => onProductKChange(value as ProductK)}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Producto de Interés" /> {/* <-- Acentuado "Interés" */}
+                            <SelectValue placeholder="Producto de Interés" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="C">Producto C</SelectItem>
@@ -214,9 +207,7 @@ export function CommonParametersSection({
               </div>
             )}
             </div>
-
         )}
-
     </div>
   )
 }

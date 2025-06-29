@@ -12,7 +12,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts"
-import { useMemo, useState, useEffect } from "react" // Importamos useEffect
+import { useMemo, useState, useEffect } from "react"
 
 interface ConcentrationChartProps {
   data: any[]
@@ -20,11 +20,9 @@ interface ConcentrationChartProps {
 }
 
 export function ConcentrationChart({ data, unitMeasure }: ConcentrationChartProps) {
-  // Verificar y procesar los datos para asegurar que tenemos concentraciones
   const processedData = useMemo(() => {
     if (!data || data.length === 0) return []
 
-    // Si ya tiene concentraciones, usar esas directamente, asegurando que sean números o 0
     const hasConcKeys = data.some(
       (d) =>
         d.concentrationA !== undefined ||
@@ -43,34 +41,25 @@ export function ConcentrationChart({ data, unitMeasure }: ConcentrationChartProp
       }));
     }
 
-    // Si no tiene concentraciones pero tiene conversión, calcularlas
-    // Esto es una suposición sobre cómo se calculan C_A, C_B, etc. a partir de la conversión
-    // Basado en tu código anterior, parece que se asumía CA0 = CB0 = 1 para este cálculo.
-    // Si tu lógica es diferente, ajústala.
     if (data[0]?.conversion !== undefined && data[0]?.time !== undefined) {
-      // Necesitas una concentración inicial real para calcular esto correctamente.
-      // Aquí asumo un valor predeterminado si no está en `data[0]`.
       const initialConcA = data[0]?.C_A0 || data[0]?.initialConcentrationA || 1.0;
       const initialConcB = data[0]?.C_B0 || data[0]?.initialConcentrationB || 1.0;
-      const initialConcC = data[0]?.C_C0 || data[0]?.initialConcentrationC || 0; // C y D suelen iniciar en 0
+      const initialConcC = data[0]?.C_C0 || data[0]?.initialConcentrationC || 0; 
       const initialConcD = data[0]?.C_D0 || data[0]?.initialConcentrationD || 0;
 
       return data.map((point) => ({
         ...point,
-        // Esto asume una estequiometría simple A + B -> C + D
-        // Deberías ajustar esto según la estequiometría real de tu simulación
         concentrationA: initialConcA * (1 - (point.conversion || 0)),
         concentrationB: initialConcB * (1 - (point.conversion || 0)),
-        concentrationC: initialConcC + (initialConcA * (point.conversion || 0)), // Asume formación
-        concentrationD: initialConcD + (initialConcA * (point.conversion || 0)), // Asume formación
-        time: point.time, // Asegura que el tiempo se propaga
+        concentrationC: initialConcC + (initialConcA * (point.conversion || 0)), 
+        concentrationD: initialConcD + (initialConcA * (point.conversion || 0)), 
+        time: point.time,
       }));
     }
 
-    return data; // Retorna los datos tal cual si ninguna de las condiciones anteriores se cumple
+    return data; 
   }, [data])
 
-  // Sincronizar estados de zoom con los datos iniciales
   useEffect(() => {
     if (processedData.length > 0) {
       const times = processedData.map((d) => d.time);
@@ -101,19 +90,16 @@ export function ConcentrationChart({ data, unitMeasure }: ConcentrationChartProp
     )
   }
 
-  // Calcular dominio de tiempo para eje X
   const times = processedData.map((d) => d.time)
-  const computedMin = Math.min(...times) // Redundante si se usa useEffect, pero se mantiene para claridad del useMemo
+  const computedMin = Math.min(...times) 
   const computedMax = Math.max(...times)
 
-  // Estados para inputs eje X (zoom) (gestionados por useEffect)
   const [xAxisMin, setXAxisMin] = useState<number>(computedMin)
   const [xAxisMax, setXAxisMax] = useState<number>(computedMax)
   const [xAxisTickInterval, setXAxisTickInterval] = useState<number>(
-    Number(((computedMax - computedMin) / 5).toFixed(2)) || 1 // Añadido || 1 para evitar NaN/Infinito
+    Number(((computedMax - computedMin) / 5).toFixed(2)) || 1 
   )
 
-  // Generar ticks eje X
   const xTicks = useMemo(() => {
     if (!xAxisTickInterval || xAxisTickInterval <= 0) return undefined;
     const ticks = [];
@@ -123,8 +109,6 @@ export function ConcentrationChart({ data, unitMeasure }: ConcentrationChartProp
     return ticks;
   }, [xAxisMin, xAxisMax, xAxisTickInterval]);
 
-
-  // Filtrar processedData según rango X
   const filteredData = useMemo(
     () =>
       processedData.filter(
@@ -133,32 +117,25 @@ export function ConcentrationChart({ data, unitMeasure }: ConcentrationChartProp
     [processedData, xAxisMin, xAxisMax]
   )
 
-  // Dominio Y basado en concentraciones
   const allConc = filteredData.flatMap((d) => [d.concentrationA, d.concentrationB, d.concentrationC, d.concentrationD])
-    .filter(val => typeof val === 'number' && !isNaN(val)); // Filtrar undefined/NaN
+    .filter(val => typeof val === 'number' && !isNaN(val)); 
 
   const minConc = allConc.length > 0 ? Math.min(...allConc) : 0;
   const maxConc = allConc.length > 0 ? Math.max(...allConc) : 1;
 
-  // Ajuste de dominio Y: Asegurarse de que yMin no sea negativo y yMax tenga un pequeño margen
-  const yMin = minConc < 0.001 && minConc >= 0 ? 0 : Math.max(0, minConc * 0.9); // No ir por debajo de 0
-  const yMax = maxConc > 0 ? maxConc * 1.1 : 1.1; // Si maxConc es 0, dar un rango mínimo
+  const yMin = minConc < 0.001 && minConc >= 0 ? 0 : Math.max(0, minConc * 0.9); 
+  const yMax = maxConc > 0 ? maxConc * 1.1 : 1.1;
 
-  // Mostrar componentes
   const showA = filteredData.some((d) => (d.concentrationA || 0) > 0)
   const showB = filteredData.some((d) => (d.concentrationB || 0) > 0)
   const showC = filteredData.some((d) => (d.concentrationC || 0) > 0)
   const showD = filteredData.some((d) => (d.concentrationD || 0) > 0)
 
-  // Formatos
-  // formatTime ya no convierte a segundos si unitMeasure es "min"
   const formatTime = (v: number) => `${v.toFixed(1)}`;
-  const formatVal = (v: number) => v.toFixed(v < 0.01 && v !== 0 ? 4 : 2); // Si es muy pequeño pero no 0, 4 decimales. Si es 0 o más grande, 2 decimales.
-
+  const formatVal = (v: number) => v.toFixed(v < 0.01 && v !== 0 ? 4 : 2); 
 
   return (
     <div>
-      {/* Gráfico */}
       <div className="h-[500px]">
         <h3 className="text-xl font-semibold text-center mb-4">
           Concentraciones vs Tiempo
@@ -180,8 +157,7 @@ export function ConcentrationChart({ data, unitMeasure }: ConcentrationChartProp
                 value: "Concentración (mol/L)",
                 angle: -90,
                 position: "insideLeft",
-                // ***** CAMBIO CLAVE AQUÍ: AUMENTAR dx para mover la etiqueta hacia la izquierda *****
-                dx: -20, // Ajusta este valor. Un valor más negativo lo moverá más a la izquierda.
+                dx: -20, 
                 style: { fontWeight: "bold" }
               }}
               domain={[yMin, yMax]}

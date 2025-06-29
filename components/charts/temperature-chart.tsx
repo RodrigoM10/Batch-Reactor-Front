@@ -20,7 +20,7 @@ interface TemperatureChartProps {
 }
 
 export function TemperatureChart({ data, energyMode, unitMeasure }: TemperatureChartProps) {
-  // Rango inicial de tiempo para el zoom
+
   const times = useMemo(() => data.map(d => d.time), [data])
   const initialMin = Math.min(...times)
   const initialMax = Math.max(...times)
@@ -30,7 +30,6 @@ export function TemperatureChart({ data, energyMode, unitMeasure }: TemperatureC
     parseFloat(((initialMax - initialMin) / 5).toFixed(2))
   )
 
-  // Ticks de tiempo según intervalo
   const xTicks = xInterval > 0
     ? Array.from(
         { length: Math.floor((xMax - xMin) / xInterval) + 1 },
@@ -38,13 +37,11 @@ export function TemperatureChart({ data, energyMode, unitMeasure }: TemperatureC
       )
     : undefined
 
-  // Filtrar datos según rango de tiempo para zoom dinámico
   const filteredData = useMemo(
     () => data.filter(d => d.time >= xMin && d.time <= xMax),
     [data, xMin, xMax]
   )
 
-  // Cálculo del dominio de temperatura (eje Y)
   const temps = useMemo(() => data.map(d => d.temperature), [data])
   let minTemp = Math.floor(Math.min(...temps) - 2)
   const maxTemp = Math.ceil(Math.max(...temps) + 2)
@@ -54,13 +51,11 @@ export function TemperatureChart({ data, energyMode, unitMeasure }: TemperatureC
     minTemp = Math.max(0, Math.min(minTemp, minCool))
   }
 
-  // Formateo de tiempo para tooltip
   const formatTime = (v: number) =>
     v < 0.1 ? `${(v * 60).toFixed(1)}` : `${v.toFixed(1)}`
 
   return (
     <div>
-      {/* Gráfico con zoom */}
       <div className="h-[500px] mb-4">
         <h3 className="text-xl font-semibold text-center mb-4">Temperatura vs Tiempo</h3>
         <ResponsiveContainer width="100%" height="100%">
@@ -110,7 +105,6 @@ export function TemperatureChart({ data, energyMode, unitMeasure }: TemperatureC
         </ResponsiveContainer>
       </div>
 
-      {/* Controles de Zoom */}
       <div className="mb-4 mt-10 flex space-x-4 items-center justify-end">
         <label className="flex flex-col text-sm">
           Mín Tiempo

@@ -18,7 +18,6 @@ export default function BatchReactorSimulator() {
 
   const [showBackendError, setShowBackendError] = useState(false)
   const [usingMockData, setUsingMockData] = useState(false)
-  // Usar los hooks personalizados
   const {
     operationType,
     isothermicMode,
@@ -47,7 +46,6 @@ export default function BatchReactorSimulator() {
     state,
   } = useReactorParameters()
 
-  // const { isLoading, showResults, simulationResults, sendFormToBackend } = useSimulation()
   const {
     isLoading,
     showResults,
@@ -55,7 +53,6 @@ export default function BatchReactorSimulator() {
     sendFormToBackend,
     useMockData,
     errorDetails,
-    // Nuevos valores para el diálogo de equilibrio
     showEquilibriumWarning,
     setShowEquilibriumWarning,
     equilibriumData,
@@ -63,8 +60,6 @@ export default function BatchReactorSimulator() {
     setTempConversion,
     adjustConversionAndResubmit,
   } = useSimulation()
-
-  // Usar el hook de validación
 
   const { errors, hasErrors, validateFields } = useValidation(
     parameters,
@@ -76,12 +71,9 @@ export default function BatchReactorSimulator() {
     volumeCalculate,
   )
 
-  // Validar al cargar el componente
   useEffect(() => {
     validateFields()
   }, [])
-
-  // Mostrar error de backend si existe
   useEffect(() => {
     if (errorDetails) {
       setShowBackendError(true)
@@ -90,22 +82,18 @@ export default function BatchReactorSimulator() {
     }
   }, [errorDetails])
   
-  // useCallback to memoize the onUseMockData function
   const onUseMockData = useCallback(() => {
     setUsingMockData(true)
       useMockData(state)
   }, [useMockData, state])
 
-  // Manejar el envío del formulario
   const onSubmit = async () => {
     const currentErrors = validateFields()
-    // Solo enviar si no hay errores de validación
     if (Object.keys(currentErrors).length === 0) {
       await sendFormToBackend(state)
     }
   }
 
- // Para depuración - mostrar los datos recibidos en la consola
  useEffect(() => {
   if (simulationResults) {
     console.log("Datos recibidos en el frontend:", simulationResults)
@@ -116,7 +104,6 @@ export default function BatchReactorSimulator() {
     <main className="container mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold mb-6 text-center">Simulador de Reactor Batch (TAC)</h1>
 
-      {/* Diálogo de advertencia de equilibrio */}
       {equilibriumData && (
         <EquilibriumWarningDialog
           open={showEquilibriumWarning}

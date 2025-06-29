@@ -19,14 +19,12 @@ export function StoichiometrySection({
   parameters,
   reactionType,
   onParameterChange,
-  onReactionTypeChange, // Recibe la nueva prop
+  onReactionTypeChange, 
   errors,
 }: StoichiometrySectionProps) {
   return (
     <div className="space-y-4">
       <h3 className="font-medium text-lg">Estequiometría de la reacción</h3>
-
-      {/* Selector de tipo de reacción */}
       <div className="flex items-center space-x-4 mb-4">
           <h4 className="font-medium text-lg">Tipo de Reacción</h4>
 

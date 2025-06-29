@@ -1,5 +1,3 @@
-// ConversionVsTemperatureChart.tsx
-
 "use client"
 
 import {
@@ -19,19 +17,16 @@ interface ConversionVsTemperatureChartProps {
 }
 
 export function ConversionVsTemperatureChart({ data }: ConversionVsTemperatureChartProps) {
-  // Datos de temperatura (eje X)
   const temps = useMemo(() => data.map(d => d.temperature), [data])
   const computedMin = useMemo(() => Math.floor(Math.min(...temps) - 2), [temps])
   const computedMax = useMemo(() => Math.ceil(Math.max(...temps) + 2), [temps])
 
-  // Estado de zoom en eje X (temperatura)
   const [xMin, setXMin] = useState<number>(computedMin)
   const [xMax, setXMax] = useState<number>(computedMax)
   const [xInterval, setXInterval] = useState<number>(
     Number(((computedMax - computedMin) / 5).toFixed(0))
   )
 
-  // Ticks de temperatura según intervalo
   const xTicks = xInterval > 0
     ? Array.from(
         { length: Math.floor((xMax - xMin) / xInterval) + 1 },
@@ -39,13 +34,11 @@ export function ConversionVsTemperatureChart({ data }: ConversionVsTemperatureCh
       )
     : undefined
 
-  // Filtrar datos según rango de temperatura
   const filtered = useMemo(
     () => data.filter(d => d.temperature >= xMin && d.temperature <= xMax),
     [data, xMin, xMax]
   )
 
-  // Cálculo dominio para conversión (eje Y)
   const maxConv = useMemo(
     () => Math.max(...data.map(d => d.conversion)),
     [data]
@@ -54,7 +47,6 @@ export function ConversionVsTemperatureChart({ data }: ConversionVsTemperatureCh
 
   return (
     <div>
-      {/* Gráfico */}
       <div className="h-[500px] ">
         <h3 className="text-xl font-semibold text-center mb-4">
           Conversión vs Temperatura
@@ -97,7 +89,6 @@ export function ConversionVsTemperatureChart({ data }: ConversionVsTemperatureCh
         </ResponsiveContainer>
       </div>
 
-      {/* Controles de zoom en temperatura */}
       <div className="mb-4 mt-10 flex space-x-4 items-center justify-end">
         <label className="flex flex-col text-sm">
           Mín Temp

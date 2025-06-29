@@ -11,34 +11,26 @@ interface DataTableProps {
 }
 
 export function DataTable({ data, operationType, energyMode, unitMeasure }: DataTableProps) {
-  // Seleccionar puntos significativos de los datos
   const significantPoints = useMemo(() => {
     if (!data || data.length === 0) return []
 
-    const minTargetCount = 10 // Mínimo de puntos a mostrar
-    const maxTargetCount = 15 // Máximo de puntos a mostrar
+    const minTargetCount = 10
+    const maxTargetCount = 15
 
-    // Si hay menos puntos que el mínimo, mostrarlos todos
     if (data.length <= minTargetCount) return data
 
-    const result = new Map() // Usamos un Map para evitar duplicados y mantener el orden inicial
-    result.set(data[0].time, data[0]) // Siempre incluir el primer punto
+    const result = new Map()
+    result.set(data[0].time, data[0])
 
-    // Si el último punto es diferente al primero, incluirlo también
     if (data[data.length - 1].time !== data[0].time) {
       result.set(data[data.length - 1].time, data[data.length - 1])
     }
 
-
-    // Buscar puntos con cambios significativos en la conversión
-    // Calculamos un umbral basado en el rango total de conversión
     const minConversion = Math.min(...data.map(d => d.conversion));
     const maxConversion = Math.max(...data.map(d => d.conversion));
     const conversionRange = maxConversion - minConversion;
 
-    // Un umbral de cambio significativo: 2% del rango total de conversión, mínimo 0.01
     const significantChangeThreshold = Math.max(conversionRange * 0.02, 0.01);
-
 
     let lastSignificantTime = data[0].time;
     for (let i = 1; i < data.length - 1; i++) {
@@ -49,41 +41,29 @@ export function DataTable({ data, operationType, energyMode, unitMeasure }: Data
         if (lastSignificantPoint) {
             const conversionChange = Math.abs(currentConversion - lastSignificantPoint.conversion);
 
-            // Incluir puntos si hay un cambio significativo en la conversión
             if (conversionChange >= significantChangeThreshold) {
                 result.set(currentTime, data[i]);
                 lastSignificantTime = currentTime;
-                // Si ya alcanzamos el máximo, podemos detener la búsqueda de cambios significativos
                 if (result.size >= maxTargetCount) break;
             }
         }
     }
 
-
-    // Si no tenemos suficientes puntos, añadir más a intervalos regulares hasta alcanzar minTargetCount
     if (result.size < minTargetCount) {
         const pointsToAdd = minTargetCount - result.size;
-        // Calcular un intervalo para distribuir los puntos restantes
         const interval = Math.max(1, Math.floor(data.length / (pointsToAdd + 1)));
 
         for (let i = 1; i <= pointsToAdd; i++) {
             const index = i * interval;
-            // Asegurarse de que el índice esté dentro de los límites y el punto no esté ya incluido
             if (index > 0 && index < data.length - 1 && !result.has(data[index].time)) {
                 result.set(data[index].time, data[index]);
             }
-            // Detener si ya alcanzamos minTargetCount
-             if (result.size >= minTargetCount) break;
+            if (result.size >= minTargetCount) break;
         }
     }
 
-    // Convertir el Map a un array y ordenar por tiempo
     const finalPoints = Array.from(result.values()).sort((a, b) => a.time - b.time);
-
-    // Asegurarse de que no superamos el máximo de puntos, tomando los primeros maxTargetCount
     return finalPoints.slice(0, maxTargetCount);
-
-
   }, [data])
 
   return (
@@ -96,7 +76,6 @@ export function DataTable({ data, operationType, energyMode, unitMeasure }: Data
         <Table>
           <TableHeader>
             <TableRow>
-              {/* Aplicar text-base o text-lg para aumentar el tamaño de la fuente en los encabezados */}
               <TableHead className="text-center font-medium text-base md:text-lg">Tiempo ({unitMeasure})</TableHead>
               <TableHead className="text-center font-medium text-base md:text-lg">[A] (mol/L)</TableHead>
               <TableHead className="text-center font-medium text-base md:text-lg">[B] (mol/L)</TableHead>
@@ -113,7 +92,6 @@ export function DataTable({ data, operationType, energyMode, unitMeasure }: Data
           <TableBody>
             {significantPoints.map((row, index) => (
               <TableRow key={index}>
-                {/* Aplicar text-sm o text-base para aumentar el tamaño de la fuente en las celdas */}
                 <TableCell className="text-center text-sm md:text-base">
                   {typeof row.time === "number" ? row.time.toFixed(2) : row.time}
                 </TableCell>
@@ -145,7 +123,7 @@ export function DataTable({ data, operationType, energyMode, unitMeasure }: Data
         </Table>
       </div>
 
-      <div className="text-sm text-gray-500 text-center"> {/* Puedes ajustar esta también si quieres */}
+      <div className="text-sm text-gray-500 text-center">
         Mostrando {significantPoints.length} puntos de {data.length} puntos totales
       </div>
     </div>

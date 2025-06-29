@@ -22,7 +22,7 @@ interface HeatRatesChartProps {
 }
 
 export function HeatRatesChart({ data,unitMeasure }: HeatRatesChartProps) {
-  // Procesar datos
+
   const processedData = useMemo(() => {
     if (!data || data.length === 0) return []
     const hasHeatRateData = data.some(d => d.heatGenerated !== undefined && d.heatRemoved !== undefined)
@@ -38,7 +38,6 @@ export function HeatRatesChart({ data,unitMeasure }: HeatRatesChartProps) {
     )
   }
 
-  // Zoom en eje X (tiempo)
   const times = useMemo(() => processedData.map(d => d.time), [processedData])
   const initialMin = Math.min(...times)
   const initialMax = Math.max(...times)
@@ -54,13 +53,11 @@ export function HeatRatesChart({ data,unitMeasure }: HeatRatesChartProps) {
       )
     : undefined
 
-  // Filtrar datos según rango de tiempo
   const filtered = useMemo(
     () => processedData.filter(d => d.time >= xMin && d.time <= xMax),
     [processedData, xMin, xMax]
   )
 
-  // Dominio Y para calor
   const allValues = useMemo(
     () => filtered.flatMap(d => [d.heatGenerated || 0, d.heatRemoved || 0]),
     [filtered]
@@ -72,7 +69,6 @@ export function HeatRatesChart({ data,unitMeasure }: HeatRatesChartProps) {
     Math.ceil(maxValue * 1.1),
   ]
 
-  // Formateo tooltip
   const formatTime = (v: number) => v < 0.1 ? `${(v * 60).toFixed(1)}` : `${v.toFixed(1)}`
 
   return (
@@ -123,7 +119,6 @@ export function HeatRatesChart({ data,unitMeasure }: HeatRatesChartProps) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-      {/* Controles de zoom en tiempo */}
       <div className="mb-4 mt-4 flex space-x-4 items-center justify-end">
         <label className="flex flex-col text-sm">
           Mín Tiempo

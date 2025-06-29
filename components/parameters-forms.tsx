@@ -99,7 +99,6 @@ export function ParametersForm({
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {/* Stoichiometry Section */}
           <StoichiometrySection 
             parameters={parameters}
             reactionType={reactionType}
@@ -117,12 +116,9 @@ export function ParametersForm({
 
           <Separator />
 
-          {/* Reaction Order Section */}
           <ReactionOrderSection reactionOrder={reactionOrder} onReactionOrderChange={onReactionOrderChange} />
 
           <Separator />
-
-          {/* Operation Type Selection */}
           <div>
             <label className="text-base font-medium mb-2 block">Tipo de Operación</label>
             <Tabs
@@ -185,7 +181,6 @@ export function ParametersForm({
 
           <Separator />
 
-          {/* Equilibrium Conditions Section */}
           <div className="space-y-4">
             { reactionType ==="reversible" ? 
               <>
@@ -207,7 +202,6 @@ export function ParametersForm({
 
           <Separator />
 
-          {/* Common Parameters */}
           <CommonParametersSection
             parameters={parameters}
             operationType={operationType}

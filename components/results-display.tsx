@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Download, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-// Importar componentes modulares
 import { DataTable } from "./charts/data-table"
 import { ConversionChart } from "./charts/conversion-chart"
 import { ConcentrationChart } from "./charts/concentration-chart"
@@ -25,7 +24,7 @@ interface ResultsDisplayProps {
   reactionType: "reversible" | "irreversible"
   equilibriumMethod: "vanthoff" | "gibbs" | "direct"
   unitMeasure: "min"| "seg"
-  results?: any // Resultados del backend
+  results?: any 
 }
 
 export default function ResultsDisplay({
@@ -40,10 +39,8 @@ export default function ResultsDisplay({
 }: ResultsDisplayProps) {
   const [activeTab, setActiveTab] = useState("conversion")
 
-  // Verificar si hay datos válidos
   const hasValidData = results && results.data && Array.isArray(results.data) && results.data.length > 0
 
-  // Si no hay datos válidos, mostrar mensaje
   if (!hasValidData) {
     return (
       <Card className="h-full">
@@ -63,25 +60,18 @@ export default function ResultsDisplay({
     )
   }
 
-  // Procesar los datos del backend
   const simulationData = results.data
 
-  // Extraer datos adicionales del backend
   const additionalData = results?.additionalData || {}
   const equilibriumConversion = additionalData.finalConversion || 0.95
 
-  // Función para exportar datos a CSV
   const exportToCSV = () => {
-    // Cabeceras del CSV
     const headers = Object.keys(simulationData[0]).join(",")
 
-    // Filas de datos
     const rows = simulationData.map((row:any) => Object.values(row).join(",")).join("\n")
 
-    // Contenido completo del CSV
     const csvContent = `${headers}\n${rows}`
 
-    // Crear un blob y un enlace de descarga
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
     const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
@@ -93,14 +83,12 @@ export default function ResultsDisplay({
     document.body.removeChild(link)
   }
 
-  // Determinar qué pestañas mostrar según el modo
   const tabsToShow = [
     { id: "conversion", label: "Conversión" },
     { id: "data", label: "Datos" },
     { id: "concentration", label: "Concentración" },
   ]
 
-  // Añadir pestañas específicas según el modo
   if (operationType === "non-isothermic") {
     tabsToShow.push({ id: "temperature", label: "Temperatura" })
     tabsToShow.push({ id: "temp-conversion", label: "Temp vs Conv" })
@@ -109,13 +97,11 @@ export default function ResultsDisplay({
       tabsToShow.push({ id: "heat", label: "Tasas de Calor" })
     }
   } else {
-    // Modo isotérmico
     if (additionalData.volume) {
       tabsToShow.push({ id: "inverse-rate", label: "Tasa Inversa" })
     }
   }
 
-  // Determinar la clase de grid basada en el número de tabs
   const getTabsGridClass = () => {
     const count = tabsToShow.length
     switch (count) {
@@ -194,7 +180,6 @@ export default function ResultsDisplay({
               </TabsContent>
             )}
 
-            {/* Pestaña para Heat Rates en modo ICQ */}
             {operationType === "non-isothermic" && energyMode === "icq" && (
               <TabsContent value="heat" className="mt-0">
                 <div className="mx-auto max-w-6xl">
@@ -203,7 +188,6 @@ export default function ResultsDisplay({
               </TabsContent>
             )}
 
-            {/* Pestaña para Inverse Rate en modo isotérmico cuando se calcula el volumen */}
             {operationType === "isothermic" && additionalData.volume && (
               <TabsContent value="inverse-rate" className="mt-0">
                 <div className="mx-auto max-w-6xl">

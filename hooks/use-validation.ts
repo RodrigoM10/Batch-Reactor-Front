@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-//import type { ReactorParameters } from "./use-reactor-parameters"
 import type { OperationType, IsothermicMode, RateConstantMode, ReactorParameters, EquilibriumMethod, EnergyMode, VolumeCalculate } from "./use-reactor-parameters"
 
 export type ValidationErrors = {
@@ -21,13 +20,9 @@ export function useValidation(
   const [errors, setErrors] = useState<ValidationErrors>({})
   const [validated, setValidated] = useState(false)
 
-  // Validar los parámetros cuando cambien
   const validateFields = () => {
     const newErrors: ValidationErrors = {}
  
-    //Parametros en Común
-
-      // Validar SIEMPRE coeficientes estequiométricos (entre -10 y 10)
         const validateCoefficient = (value: string, fieldName: keyof ReactorParameters) => {
           
           if (!value.trim()) {
@@ -47,7 +42,6 @@ export function useValidation(
         validateCoefficient(parameters.coefficientC, "coefficientC")
         validateCoefficient(parameters.coefficientD, "coefficientD")
 
-      // Validar concentraciones (mayores a cero)
         const validateConcentration = (value: string, fieldName: keyof ReactorParameters) => {
           const num = Number.parseFloat(value)
           if (isNaN(num)) {
@@ -65,8 +59,6 @@ export function useValidation(
           validateConcentration(parameters.inertConcentration,"inertConcentration")
         } 
 
-      // Parametros de Equilibrio
-        //GIBBS
         const validateGibbsParameters = (value: string, fieldName: keyof ReactorParameters) => {
             const num = Number.parseFloat(value)
             if (isNaN(num)) {
@@ -80,7 +72,6 @@ export function useValidation(
             validateGibbsParameters(parameters.gibbsEnergyC, "gibbsEnergyC")
             validateGibbsParameters(parameters.gibbsEnergyD, "gibbsEnergyD")
           }
-        //Van't Hoff  
         const validateVantHoffParameters = (value: string, fieldName: keyof ReactorParameters) => {
           const num = Number.parseFloat(value)
           if (isNaN(num)) {
@@ -90,8 +81,6 @@ export function useValidation(
           }
         }
         
-  
-    // Validar concentraciones (mayores a cero)
     const validateCP = (value: string, fieldName: keyof ReactorParameters) => {
         const num = Number.parseFloat(value)
         if (isNaN(num)) {
@@ -112,7 +101,6 @@ export function useValidation(
       }
 
 
-      // Validar temperaturas
     const tempValue = (value: string, fieldName: keyof ReactorParameters) => {
         const num = Number.parseFloat(value)
         if (isNaN(num)) {
@@ -131,7 +119,6 @@ export function useValidation(
         tempValue(parameters.coolingFluidTemperature, "coolingFluidTemperature")
       }
 
-    // Validar parametros varios 
     const parametersValidation = (value: string, fieldName: keyof ReactorParameters) => {
         const num = Number.parseFloat(value)
         if (isNaN(num)) {
@@ -140,14 +127,12 @@ export function useValidation(
           newErrors[fieldName] = "Debe ser mayor a 0"
         }
       }
-      // Parametros de equilibrio
         if  (operationType === "isothermic" && equilibriumMethod === "direct"  ){ 
           parametersValidation(parameters.ke, "ke")
         }
         if(equilibriumMethod === "vanthoff"){
           parametersValidation(parameters.keRef, "keRef")
         }
-      // Validacion Constante de Velocidad Dif Metodos
         if(operationType ==="isothermic"){
           if (rateConstantMode==="direct"){
             parametersValidation(parameters.directRateConstant, "directRateConstant")
@@ -157,7 +142,6 @@ export function useValidation(
           }
         }
 
-      //Validacion Calculo del Volumen
       if(operationType==="isothermic" && volumeCalculate==="s"){
         parametersValidation(parameters.productionOfk, "productionOfk")
         parametersValidation(parameters.cdmTime, "cdmTime")
@@ -175,7 +159,6 @@ export function useValidation(
         parametersValidation(parameters.fluidRateRef, "fluidRateRef")
       }
 
-    // Validar conversión objetivo (entre 0 y 1) o tiempo de reaccion (exclusivo Isotermico)
     if(operationType ==="isothermic"){
         if(isothermicMode ==="x"){
           const convValue = Number.parseFloat(parameters.targetConversion)
@@ -196,8 +179,6 @@ export function useValidation(
         }
     }
   
-
-    // Validar Calores de reaccion 
     const heatReactionValue = (value: string, fieldName: keyof ReactorParameters) => {
         const num = Number.parseFloat(value)
         if (isNaN(num)) {
@@ -212,20 +193,16 @@ export function useValidation(
   return newErrors
 }
 
-// Validar cuando cambian los parámetros
 useEffect(() => {
   if (validated) {
     validateFields()
   }
 }, [parameters, validated])
 
-// Validar cuando cambian los modos
 useEffect(() => {
   setValidated(true)
   validateFields()
 }, [operationType, isothermicMode, rateConstantMode, equilibriumMethod, energyMode])
-
-  // Verificar si hay errores
   const hasErrors = Object.keys(errors).length > 0
 
   return { errors, hasErrors, validateFields }

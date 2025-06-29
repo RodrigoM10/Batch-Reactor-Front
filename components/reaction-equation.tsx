@@ -21,33 +21,25 @@ export function ReactionEquation({reactionType, coefficientA, coefficientB, coef
     const reactants: string[] = []
     const products: string[] = []
 
-    // Process each component
     Object.entries(coefficients).forEach(([component, coefficient]) => {
-      // Skip if coefficient is 0
       if (coefficient === 0) return
 
-      // Determine if it's a reactant or product
       if (coefficient < 0) {
-        // Reactant (make coefficient positive for display)
         const absCoeff = Math.abs(coefficient)
         reactants.push(absCoeff === 1 ? component : `${absCoeff}${component}`)
       } else {
-        // Product
         products.push(coefficient === 1 ? component : `${coefficient}${component}`)
       }
     })
 
-    // If no reactants or products, show a placeholder
     if (reactants.length === 0) reactants.push("?")
     if (products.length === 0) products.push("?")
 
-    // Join with plus signs
     const reactantStr = reactants.join(" + ")
     const productStr = products.join(" + ")
 
     const finalReaction = reactionType === "reversible" ? `${reactantStr} ⇌ ${productStr}` :`${reactantStr} → ${productStr}`
 
-    // Return the full equation
     return   finalReaction             
   }
 

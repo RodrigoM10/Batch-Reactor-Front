@@ -1,5 +1,3 @@
-// ConversionChart.tsx
-
 "use client"
 
 import {
@@ -26,13 +24,11 @@ export function ConversionChart({
   equilibriumConversion,
   unitMeasure,
 }: ConversionChartProps) {
-  // Convertir los datos para mostrar el tiempo en segundos
   const dataInSeconds = useMemo(
     () => data.map((point) => ({ ...point, timeInSeconds: point.time })),
     [data]
   )
 
-  // Calcular valores automáticos base
   const computedMin = useMemo(
     () => Math.min(...dataInSeconds.map((d) => d.timeInSeconds)),
     [dataInSeconds]
@@ -42,14 +38,13 @@ export function ConversionChart({
     [dataInSeconds]
   )
 
-  // Estados para inputs de eje X
+
   const [xAxisMin, setXAxisMin] = useState<number>(computedMin)
   const [xAxisMax, setXAxisMax] = useState<number>(computedMax)
   const [xAxisTickInterval, setXAxisTickInterval] = useState<number>(
     Number(((computedMax - computedMin) / 5).toFixed(2))
   )
 
-  // Generar ticks
   const xTicks = xAxisTickInterval
     ? Array.from(
         { length: Math.floor((xAxisMax - xAxisMin) / xAxisTickInterval) + 1 },
@@ -57,7 +52,6 @@ export function ConversionChart({
       )
     : undefined
 
-  // Filtrar datos según rango X para zoom dinámico
   const filteredData = useMemo(
     () =>
       dataInSeconds.filter(
@@ -66,18 +60,15 @@ export function ConversionChart({
     [dataInSeconds, xAxisMin, xAxisMax]
   )
 
-  // Calcular el máximo valor para el eje Y
   const maxConversion = data.length > 0 ? Math.max(...data.map((d) => d.conversion || 0)) : 0
   const yMax = equilibriumConversion
     ? Math.min(Math.max(equilibriumConversion * 1.1, maxConversion * 1.1), 1)
     : Math.min(maxConversion * 1.1, 1)
 
-  // Formatear la conversión para el tooltip
   const formatConversion = (value: number) => value.toFixed(4)
 
   return (
     <div>
-      {/* Gráfico */}
       <div className="h-[500px]">
         <h3 className="text-xl font-semibold text-center mb-4">
           Conversión en función del tiempo de reacción
@@ -133,7 +124,6 @@ export function ConversionChart({
         </ResponsiveContainer>
       </div>
 
-      {/* Controles para eje X */}
       <div className="mb-4 mt-10 flex space-x-1 items-center justify-end">
         <label className="flex flex-col text-sm">
           Mín X

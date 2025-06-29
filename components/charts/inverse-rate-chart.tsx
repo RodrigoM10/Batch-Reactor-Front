@@ -8,7 +8,6 @@ interface InverseRateChartProps {
 }
 
 export function InverseRateChart({ data, unitMeasure}: InverseRateChartProps) {
-  // Verificar si hay datos de inverse rate
   const hasInverseRateData = data.some((d) => d.inverseRate !== undefined && d.inverseRate > 0)
 
   if (!hasInverseRateData) {
@@ -19,14 +18,10 @@ export function InverseRateChart({ data, unitMeasure}: InverseRateChartProps) {
     )
   }
 
-  // Filtrar puntos con conversión > 0 para evitar valores infinitos
   const filteredData = data.filter((point) => point.conversion > 0 && point.inverseRate !== undefined)
 
-  // Calcular el valor máximo para el dominio del eje Y
   const maxInverseRate = Math.max(...filteredData.map((d) => d.inverseRate || 0))
 
-  // Calcular un límite razonable para el eje Y
-  // Si hay valores extremos, limitamos para mejor visualización
   const p95 = percentile(
     filteredData.map((d) => d.inverseRate || 0),
     95,
@@ -64,15 +59,11 @@ export function InverseRateChart({ data, unitMeasure}: InverseRateChartProps) {
   )
 }
 
-// Función para calcular percentiles (para manejar valores extremos)
 function percentile(arr: number[], p: number) {
   if (arr.length === 0) return 0
   if (arr.length === 1) return arr[0]
 
-  // Ordenar el array
   const sorted = [...arr].sort((a, b) => a - b)
-
-  // Calcular el índice
   const index = Math.ceil((p / 100) * sorted.length) - 1
 
   return sorted[index]

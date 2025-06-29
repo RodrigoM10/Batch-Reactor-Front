@@ -1,4 +1,3 @@
-// app/api/simulate/route.ts
 import { NextResponse } from "next/server"
 import {
   BackendResponse,
@@ -7,7 +6,7 @@ import {
   BackendSummary,
   BackendConcentrations,
   BackendData,
-} from "./interfaces/backend" // Importa todas las interfaces necesarias
+} from "./interfaces/backend" 
 
 export async function POST(request: Request) {
   try {
