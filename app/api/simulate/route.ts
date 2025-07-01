@@ -8,13 +8,13 @@ import {
   BackendData,
 } from "./interfaces/backend" 
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-
+//const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = "http://127.0.0.1:8000"
 
 export async function POST(request: Request) {
   try {
     const data: Record<string, unknown> = await request.json()
-    const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}/simulate`;
+    const backendUrl = `${API_BASE}/simulate`;
     if (!backendUrl) {
       console.error("Error: PYTHON_BACKEND_URL no está configurada")
       return NextResponse.json(
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
       const result: BackendResponse = await response.json()
       const processedResult: FormattedResult = ensureResponseFormat(result)
-
+  
       return NextResponse.json(processedResult)
     } catch (fetchError) {
       console.error("Error al conectar con el backend:", fetchError)
@@ -80,7 +80,7 @@ function ensureResponseFormat(result: BackendResponse): FormattedResult {
     additionalData: {},
     data: [],
   }
-
+  
   if (result.summary) {
     formattedResult.additionalData = {
       ...formattedResult.additionalData,

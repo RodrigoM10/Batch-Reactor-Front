@@ -191,6 +191,7 @@ export function useSimulation() {
       let result
       try {
         result = JSON.parse(responseText)
+        console.log("resultado",result)
       } catch (e) {
         console.error("Error al parsear la respuesta como JSON:", e)
         throw new Error(`Respuesta no válida: ${responseText}`)
@@ -200,6 +201,11 @@ export function useSimulation() {
         console.error("Error en la respuesta:", result)
         setErrorDetails(result.details || result.error || "Error desconocido")
         throw new Error(`Error en la respuesta: ${response.status}`)
+      }
+
+      if (!result.warning && result.message && result.message.includes("No se pudo calcular la conversión de equilibrio")) {
+         alert(result.message)
+        return false
       }
       
       if (result.warning && result.message && result.message.includes("excede la conversión de equilibrio")) {
@@ -217,6 +223,7 @@ export function useSimulation() {
         return false
       }
        const processedResult = processBackendResponse(result, state)
+     
        setSimulationResults(processedResult)
       setShowResults(true)
 
@@ -224,7 +231,7 @@ export function useSimulation() {
         title: "Datos recibidos correctamente",
         description: "Los resultados de la simulación han sido procesados con éxito.",
       })
-
+      console.log("Procesando datos ya estructurados:", backendData)
       return true
     } catch (error) {
       console.error("Error al enviar datos al backend:", error)
@@ -269,7 +276,7 @@ export function useSimulation() {
      }
  
      if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object") {
-      console.log("Procesando datos ya estructurados:", data.length)
+      
       const needsConcentrationData =
         !data[0].hasOwnProperty("concentrationA") && !data[0].hasOwnProperty("concentration")
 

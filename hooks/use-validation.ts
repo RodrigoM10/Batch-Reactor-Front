@@ -23,7 +23,7 @@ export function useValidation(
   const validateFields = () => {
     const newErrors: ValidationErrors = {}
  
-        const validateCoefficient = (value: string, fieldName: keyof ReactorParameters) => {
+        const validateCoefficientReactive = (value: string, fieldName: keyof ReactorParameters) => {
           
           if (!value.trim()) {
             newErrors[fieldName] = "Este campo es requerido"
@@ -33,14 +33,29 @@ export function useValidation(
           const num = Number.parseFloat(value)
           if (isNaN(num)) {
             newErrors[fieldName] = "Debe ser un número válido"
-          } else if (num < -10 || num > 10) {
-            newErrors[fieldName] = "Debe estar entre -10 y 10"
+          } else if (num < -10 || num > 0 ) {
+            newErrors[fieldName] = "Debe estar entre -10 y 0"
           }
         }
-        validateCoefficient(parameters.coefficientA, "coefficientA")
-        validateCoefficient(parameters.coefficientB, "coefficientB")
-        validateCoefficient(parameters.coefficientC, "coefficientC")
-        validateCoefficient(parameters.coefficientD, "coefficientD")
+        validateCoefficientReactive(parameters.coefficientA, "coefficientA")
+        validateCoefficientReactive(parameters.coefficientB, "coefficientB")
+
+        const validateCoefficientProduct = (value: string, fieldName: keyof ReactorParameters) => {
+          
+          if (!value.trim()) {
+            newErrors[fieldName] = "Este campo es requerido"
+            return
+          }
+
+          const num = Number.parseFloat(value)
+          if (isNaN(num)) {
+            newErrors[fieldName] = "Debe ser un número válido"
+          } else if (num < 0 || num > 10) {
+            newErrors[fieldName] = "Debe estar entre 0 y 10"
+          }
+        }
+        validateCoefficientProduct(parameters.coefficientC, "coefficientC")
+        validateCoefficientProduct(parameters.coefficientD, "coefficientD")
 
         const validateConcentration = (value: string, fieldName: keyof ReactorParameters) => {
           const num = Number.parseFloat(value)

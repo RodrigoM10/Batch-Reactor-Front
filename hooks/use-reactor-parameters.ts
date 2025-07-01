@@ -74,8 +74,8 @@ export interface ReactorState {
 
 const defaultParameters: ReactorParameters = {
     coefficientA: "-1",
-    coefficientB: "-2",
-    coefficientC: "3",
+    coefficientB: "-1",
+    coefficientC: "1",
     coefficientD: "0",
     initialConcentration: "1.0",
     initialConcentrationB: "1.0",    

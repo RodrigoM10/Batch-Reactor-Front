@@ -128,9 +128,6 @@ export default function BatchReactorSimulator() {
               <Button variant="outline" size="sm" onClick={() => setShowBackendError(false)}>
                 Cerrar
               </Button>
-              <Button variant="default" size="sm" onClick={onUseMockData}>
-                Usar datos de prueba
-              </Button>
             </div>
           </AlertDescription>
         </Alert>

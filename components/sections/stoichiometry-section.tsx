@@ -57,7 +57,7 @@ export function StoichiometrySection({
           <br />
           Usa valores negativos para reactivos y positivos para los productos.
           <br />
-          Ejemplo: Para A + 2B → 3C, ingresá A: -1, B: -2, C: 3, D: 0
+          Ejemplo: Para A + B → C, ingresá A: -1, B: -1, C: 1, D: 0
           <br />
           <span className="font-medium text-amber-600">
             Los valores deben estar entre -10 y 10.
