@@ -162,7 +162,7 @@ export function NonIsothermicSection({
 
       <div>
         <Label htmlFor="reactionEnthalpy" className={errors.reactionEnthalpy ? "text-red-500" : ""}>
-        Diferencia de Entalpia Estándar de la Reacción:  [cal/mol]
+        Calor de Reacción Estándar:  [cal/mol]
                 </Label>
                 <Input
                     id="reactionEnthalpy"
@@ -192,7 +192,7 @@ export function NonIsothermicSection({
 
           <div>
               <Label htmlFor="coolingFluidTemperature" className={errors.coolingFluidTemperature ? "text-red-500" : ""}>
-               Temperatura del refrigerante: Tcool[K]
+               Temperatura del fluido de intercambio: Tcool[K]
               </Label>
               <Input
                  id="coolingFluidTemperature"
@@ -231,7 +231,7 @@ export function NonIsothermicSection({
 
           <div>
             <Label htmlFor="heatCapacityRef" className={errors.heatCapacityRef ? "text-red-500" : ""}>
-              Calor especifico del refrigerante: Cp_ref[cal/kg.k]
+              Calor especifico del fluido de intercambio: Cp_ref[cal/kg.k]
               </Label>
               <Input
                  id="heatCapacityRef"
@@ -244,7 +244,7 @@ export function NonIsothermicSection({
 
           <div>
               <Label htmlFor="fluidRateRef" className={errors.fluidRateRef ? "text-red-500" : ""}>
-              Velocidad Masica del Refrigerante: m_c[kg/{unitMeasure}]
+              Velocidad Masica del fluido de intercambio: m_c[kg/{unitMeasure}]
               </Label>
               <Input
                  id="fluidRateRef"

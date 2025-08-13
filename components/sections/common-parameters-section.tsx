@@ -128,11 +128,10 @@ export function CommonParametersSection({
         )}
       </div>
 
-        {operationType === "isothermic" && (
             <div>
               <Label>Cálculo del Volumen del Reactor </Label>
               <div className="my-2">
-              <AlertDescription>La simulación en modo Isotérmico permite calcular el volumen del reactor para determinada producción de un producto deseado.</AlertDescription>
+              <AlertDescription>La simulación permite calcular el volumen del reactor para determinada producción de un producto deseado.</AlertDescription>
               </div>
               <div className="flex items-center space-x-4 mt-2 mb-3">
                 <div className="flex items-center space-x-2">
@@ -207,7 +206,6 @@ export function CommonParametersSection({
               </div>
             )}
             </div>
-        )}
     </div>
   )
 }

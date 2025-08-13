@@ -67,6 +67,7 @@ export function ConversionChart({
 
   const formatConversion = (value: number) => value.toFixed(4)
 
+
   return (
     <div>
       <div className="h-[500px]">
@@ -110,16 +111,17 @@ export function ConversionChart({
               strokeWidth={2}
             />
             {filteredData[0]?.equilibrium && (
-              <Line
+              <ReferenceLine
                 type="monotone"
-                dataKey="equilibrium"
+                y={filteredData[0]?.equilibrium }
+                //dataKey="equilibrium"
                 name="Conversión de Equilibrio"
                 stroke="#ff0000"
                 strokeDasharray="5 5"
-                dot={false}
+                //dot={false}
                 strokeWidth={2}
               />
-            )}
+            )}    
           </LineChart>
         </ResponsiveContainer>
       </div>

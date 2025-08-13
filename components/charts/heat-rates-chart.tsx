@@ -33,7 +33,7 @@ export function HeatRatesChart({ data,unitMeasure }: HeatRatesChartProps) {
   if (processedData.length === 0) {
     return (
       <div className="h-[500px] flex items-center justify-center">
-        <p className="text-gray-500">No hay datos de tasas de calor disponibles para mostrar.</p>
+        <p className="text-gray-500">No hay datos de calor disponibles para mostrar.</p>
       </div>
     )
   }
@@ -73,7 +73,7 @@ export function HeatRatesChart({ data,unitMeasure }: HeatRatesChartProps) {
 
   return (
     <div>
-      <h3 className="text-xl font-semibold text-center mb-4">Tasas de Generación y Remoción de Calor</h3>
+      <h3 className="text-xl font-semibold text-center mb-4">Calor Generado/Absorbido y Calor Intercambiado</h3>
       <div className="h-[500px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={filtered} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -101,7 +101,7 @@ export function HeatRatesChart({ data,unitMeasure }: HeatRatesChartProps) {
             <Area
               type="monotone"
               dataKey="heatGenerated"
-              name="Calor Generado (Qg)"
+              name="Calor Generado o Absorbido (Qg)"
               stroke="#ff7300"
               fill="#ff7300"
               fillOpacity={0.3}
@@ -110,7 +110,7 @@ export function HeatRatesChart({ data,unitMeasure }: HeatRatesChartProps) {
             <Area
               type="monotone"
               dataKey="heatRemoved"
-              name="Calor Removido (Qr)"
+              name="Calor Intercambiado (Qr)"
               stroke="#0088fe"
               fill="#0088fe"
               fillOpacity={0.3}

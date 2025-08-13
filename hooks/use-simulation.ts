@@ -88,7 +88,7 @@ export function useSimulation() {
     else if (equilibriumMethod === "direct") k_eq_method = "direct"
 
     let ans_volume = null
-    if (operationType==="isothermic" && volumeCalculate==="s") ans_volume = "s"
+    if ( volumeCalculate==="s") ans_volume = "s"
     else ans_volume = "n"
 
     let product_k = null
@@ -152,10 +152,10 @@ export function useSimulation() {
       stoichiometry: stoichiometry,
       excess_B: excessB,
       ans_volume: ans_volume,
-      P_k: operationType==="isothermic" ? (volumeCalculate === "s" ? Number.parseFloat(parameters.productionOfk) : null): null,
-      t_mcd: operationType==="isothermic" ? (volumeCalculate === "s" ? Number.parseFloat(parameters.cdmTime) : null):null,
-      product_k:operationType==="isothermic" ? ( volumeCalculate === "s" ? String(product_k): null):null,
-      m_k: operationType==="isothermic" ? (volumeCalculate === "s" ? Number.parseFloat(parameters.molarMassK) : null):null,
+      P_k:  (volumeCalculate === "s" ? Number.parseFloat(parameters.productionOfk) : null),
+      t_mcd:  (volumeCalculate === "s" ? Number.parseFloat(parameters.cdmTime) : null),
+      product_k: ( volumeCalculate === "s" ? String(product_k): null),
+      m_k:  (volumeCalculate === "s" ? Number.parseFloat(parameters.molarMassK) : null),
       T_ref: Number.parseFloat(parameters.tRef),
       T0: operationType === "non-isothermic" ? Number.parseFloat(parameters.initialTemperature) : null,
       K_eq_ref: equilibriumMethod === "vanthoff" ? Number.parseFloat(parameters.keRef) : null,
@@ -191,7 +191,6 @@ export function useSimulation() {
       let result
       try {
         result = JSON.parse(responseText)
-        console.log("resultado",result)
       } catch (e) {
         console.error("Error al parsear la respuesta como JSON:", e)
         throw new Error(`Respuesta no válida: ${responseText}`)
@@ -281,7 +280,8 @@ export function useSimulation() {
         !data[0].hasOwnProperty("concentrationA") && !data[0].hasOwnProperty("concentration")
 
       const needsInverseRateData =
-        state?.operationType === "isothermic" && combinedAdditionalData.volume && !data[0].hasOwnProperty("inverseRate")
+        //state?.operationType === "isothermic" && 
+        combinedAdditionalData.volume && !data[0].hasOwnProperty("inverseRate")
 
       if (!needsConcentrationData && !needsInverseRateData) {
         return {

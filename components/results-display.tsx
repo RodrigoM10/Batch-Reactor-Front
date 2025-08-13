@@ -88,19 +88,17 @@ export default function ResultsDisplay({
     { id: "data", label: "Datos" },
     { id: "concentration", label: "Concentración" },
   ]
-
+  if (additionalData.volume) {
+      tabsToShow.push({ id: "inverse-rate", label: "Diag. Levenspiel" })
+    }
   if (operationType === "non-isothermic") {
     tabsToShow.push({ id: "temperature", label: "Temperatura" })
     tabsToShow.push({ id: "temp-conversion", label: "Temp vs Conv" })
 
     if (energyMode === "icq") {
-      tabsToShow.push({ id: "heat", label: "Tasas de Calor" })
+      tabsToShow.push({ id: "heat", label: "Calor" })
     }
-  } else {
-    if (additionalData.volume) {
-      tabsToShow.push({ id: "inverse-rate", label: "Tasa Inversa" })
-    }
-  }
+  } 
 
   const getTabsGridClass = () => {
     const count = tabsToShow.length
@@ -188,7 +186,7 @@ export default function ResultsDisplay({
               </TabsContent>
             )}
 
-            {operationType === "isothermic" && additionalData.volume && (
+            {additionalData.volume && (
               <TabsContent value="inverse-rate" className="mt-0">
                 <div className="mx-auto max-w-6xl">
                   <InverseRateChart data={simulationData} unitMeasure={unitMeasure} />
