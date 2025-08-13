@@ -10,18 +10,20 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine,
+  Label,
 } from "recharts"
 import { useMemo, useState } from "react"
 
 interface ConversionChartProps {
   data: Array<{ time: number; conversion: number; equilibrium?: number }>;
   equilibriumConversion?: number;
+  finalConversion?: number;
   unitMeasure: "min" | "seg";
 }
 
 export function ConversionChart({
   data,
-  equilibriumConversion,
+  finalConversion,
   unitMeasure,
 }: ConversionChartProps) {
   const dataInSeconds = useMemo(
@@ -30,11 +32,13 @@ export function ConversionChart({
   )
 
   const computedMin = useMemo(
-    () => Math.min(...dataInSeconds.map((d) => d.timeInSeconds)),
+    // Añadido control para array vacío para evitar Math.min() en array vacío.
+    () => (dataInSeconds.length > 0 ? Math.min(...dataInSeconds.map((d) => d.timeInSeconds)) : 0),
     [dataInSeconds]
   )
   const computedMax = useMemo(
-    () => Math.max(...dataInSeconds.map((d) => d.timeInSeconds)),
+    // Añadido control para array vacío y valor por defecto.
+    () => (dataInSeconds.length > 0 ? Math.max(...dataInSeconds.map((d) => d.timeInSeconds)) : 1),
     [dataInSeconds]
   )
 
@@ -42,7 +46,8 @@ export function ConversionChart({
   const [xAxisMin, setXAxisMin] = useState<number>(computedMin)
   const [xAxisMax, setXAxisMax] = useState<number>(computedMax)
   const [xAxisTickInterval, setXAxisTickInterval] = useState<number>(
-    Number(((computedMax - computedMin) / 5).toFixed(2))
+
+    Number(((computedMax - computedMin) / 5 || 0.1).toFixed(2)) 
   )
 
   const xTicks = xAxisTickInterval
@@ -61,12 +66,18 @@ export function ConversionChart({
   )
 
   const maxConversion = data.length > 0 ? Math.max(...data.map((d) => d.conversion || 0)) : 0
-  const yMax = equilibriumConversion
-    ? Math.min(Math.max(equilibriumConversion * 1.1, maxConversion * 1.1), 1)
-    : Math.min(maxConversion * 1.1, 1)
+
+  let calculatedYMax = 0;
+  calculatedYMax = maxConversion;
+
+  if (filteredData[0].equilibrium !== undefined && filteredData[0].equilibrium !== null) {
+      calculatedYMax = Math.max(calculatedYMax, filteredData[0].equilibrium);
+  } else if (finalConversion !== undefined && finalConversion !== null) {
+      calculatedYMax = Math.max(calculatedYMax, finalConversion);
+  }
+  const yMax = Math.min(Math.max(calculatedYMax * 1.1, 0.1), 1);
 
   const formatConversion = (value: number) => value.toFixed(4)
-
 
   return (
     <div>
@@ -110,18 +121,22 @@ export function ConversionChart({
               dot={false}
               strokeWidth={2}
             />
-            {filteredData[0]?.equilibrium && (
-              <ReferenceLine
-                type="monotone"
-                y={filteredData[0]?.equilibrium }
-                //dataKey="equilibrium"
-                name="Conversión de Equilibrio"
-                stroke="#ff0000"
-                strokeDasharray="5 5"
-                //dot={false}
-                strokeWidth={2}
-              />
-            )}    
+            {filteredData[0].equilibrium !== undefined && filteredData[0].equilibrium !== null && (
+             <ReferenceLine
+                  y={filteredData[0].equilibrium}
+                  stroke="#ff0000"
+                  strokeDasharray="5 5"
+                  strokeWidth={2}
+                >
+                <Label
+                  value={`Conversión de equilibrio: ${filteredData[0].equilibrium.toFixed(3)}`}
+                  position="bottom" 
+                  offset={10} 
+                  fill="#ff0000" 
+                  style={{ fontWeight: "bold" }} 
+                />
+              </ReferenceLine>
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>

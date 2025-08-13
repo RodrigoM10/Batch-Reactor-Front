@@ -63,7 +63,8 @@ export default function ResultsDisplay({
   const simulationData = results.data
 
   const additionalData = results?.additionalData || {}
-  const equilibriumConversion = additionalData.finalConversion || 0.95
+
+  const finalConversion = additionalData.finalConversion || 0.95
 
   const exportToCSV = () => {
     const headers = Object.keys(simulationData[0]).join(",")
@@ -144,7 +145,7 @@ export default function ResultsDisplay({
               <div className="mx-auto max-w-6xl">
                 <ConversionChart 
                 data={simulationData} 
-                equilibriumConversion={equilibriumConversion} 
+                finalConversion={finalConversion}
                 unitMeasure={unitMeasure}
                 />
               </div>
