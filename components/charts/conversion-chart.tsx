@@ -68,14 +68,23 @@ export function ConversionChart({
   const maxConversion = data.length > 0 ? Math.max(...data.map((d) => d.conversion || 0)) : 0
 
   let calculatedYMax = 0;
+  let useMargin = true;
+
   calculatedYMax = maxConversion;
 
   if (filteredData[0].equilibrium !== undefined && filteredData[0].equilibrium !== null) {
       calculatedYMax = Math.max(calculatedYMax, filteredData[0].equilibrium);
+       useMargin = false;
   } else if (finalConversion !== undefined && finalConversion !== null) {
       calculatedYMax = Math.max(calculatedYMax, finalConversion);
+      useMargin = false;
   }
-  const yMax = Math.min(Math.max(calculatedYMax * 1.1, 0.1), 1);
+  
+  let yMax = calculatedYMax;
+  if (useMargin) {
+      yMax = calculatedYMax * 1.1;
+  }
+  yMax = Math.min(Math.max(yMax, 0.1), 1);
 
   const formatConversion = (value: number) => value.toFixed(4)
 
@@ -120,8 +129,7 @@ export function ConversionChart({
               activeDot={{ r: 8 }}
               dot={false}
               strokeWidth={2}
-            />
-            {filteredData[0].equilibrium !== undefined && filteredData[0].equilibrium !== null && (
+            />             {filteredData[0].equilibrium !== undefined && filteredData[0].equilibrium !== null && (
              <ReferenceLine
                   y={filteredData[0].equilibrium}
                   stroke="#ff0000"
