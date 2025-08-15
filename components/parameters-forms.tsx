@@ -116,7 +116,13 @@ export function ParametersForm({
 
           <Separator />
 
-          <ReactionOrderSection reactionOrder={reactionOrder} onReactionOrderChange={onReactionOrderChange} />
+          <ReactionOrderSection 
+            reactionOrder={reactionOrder} 
+            excessB={excessB}
+            coefficientB={parameters.coefficientB}
+            onExcessBChange={onExcessBChange}
+            onReactionOrderChange={onReactionOrderChange} 
+          />
 
           <Separator />
           <div>
@@ -209,9 +215,7 @@ export function ParametersForm({
             volumeCalculate={volumeCalculate}
             onVolumeCalculateChange={onVolumeCalculateChange}
             productK={productK}
-            excessB={excessB}
             onProductKChange={onProductKChange}
-            onExcessBChange={onExcessBChange}
             errors={errors}
           />
 

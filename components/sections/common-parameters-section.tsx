@@ -2,7 +2,7 @@
 
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { OperationType, ReactorParameters, VolumeCalculate, ProductK, ExcessB } from "@/hooks/use-reactor-parameters"
+import { OperationType, ReactorParameters, VolumeCalculate, ProductK } from "@/hooks/use-reactor-parameters"
 import { Switch } from "@/components/ui/switch"
 import { AlertDescription } from "../ui/alert"
 import { ValidationErrors } from "@/hooks/use-validation"
@@ -14,11 +14,9 @@ interface CommonParametersSectionProps {
   operationType: OperationType
   volumeCalculate: VolumeCalculate
   productK: ProductK
-  excessB: ExcessB
   onVolumeCalculateChange: (value: VolumeCalculate) => void
   onProductKChange: (value: ProductK) => void
   onParameterChange: (param: keyof ReactorParameters, value: string) => void
-  onExcessBChange: (value: ExcessB) => void
   errors: ValidationErrors
 }
 
@@ -27,11 +25,9 @@ export function CommonParametersSection({
   operationType,
   volumeCalculate,
   productK,
-  excessB,
   onVolumeCalculateChange,
   onProductKChange,
   onParameterChange,
-  onExcessBChange,
   errors,
 }: CommonParametersSectionProps) {
   return (
@@ -69,20 +65,6 @@ export function CommonParametersSection({
               className={errors.initialConcentrationB ? "border-red-500" : ""}
             />
             <FormError message={errors.initialConcentrationB} />
-          </div>
-          <div className="flex flex-col items-center justify-end h-full pt-6">
-            <Label
-              htmlFor="excess_b_switch"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-nowrap"
-            >
-              B en exceso?
-            </Label>
-            <Switch
-              id="excess_b_switch"
-              checked={excessB}
-              onCheckedChange={(checked) => onExcessBChange(checked ? true : false)}
-              className="mt-2" 
-            />
           </div>
         </div>
 
