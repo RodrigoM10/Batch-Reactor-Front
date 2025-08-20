@@ -1,14 +1,23 @@
 "use client"
+import { useMemo, useState } from "react"
+
+
+interface InverseRateDataPoint {
+  time?: number 
+  conversion: number
+  inverseRate?: number
+}
 
 interface SimulationSummaryProps {
   operationType: "isothermic" | "non-isothermic"
   isothermicMode: "x" | "t"
   energyMode: "adiabatic" | "icq"
   reactionOrder: "1" | "2"
-   reactionType: "reversible" | "irreversible"
+  reactionType: "reversible" | "irreversible"
   equilibriumMethod: "vanthoff" | "gibbs" | "direct"
   additionalData: any
-   unitMeasure:"min"|"seg"
+  unitMeasure:"min"|"seg"
+  data: InverseRateDataPoint[]
 }
 
 export function SimulationSummary({
@@ -19,9 +28,29 @@ export function SimulationSummary({
   reactionType,
   equilibriumMethod,
   additionalData,
-  unitMeasure
+  unitMeasure,
+  data
 }: SimulationSummaryProps) {
   const finalTemperature = additionalData.finalTemperature || 298.15
+
+    const validData = useMemo(
+      () =>
+        data.filter(
+          (d) =>
+            d.conversion !== undefined &&
+            d.conversion > 0 &&
+            d.inverseRate !== undefined &&
+            d.inverseRate > 0,
+        ),
+      [data],
+    )
+    const hasInverseRateData = validData.length > 0
+
+    const maxInverseRate = useMemo(
+      () => Math.max(...validData.map((d) => d.inverseRate || 0)),
+      [validData],
+    )
+
 
   return (
     <div className="mt-6 p-4 bg-gray-50 rounded-md text-sm max-w-6xl mx-auto">
@@ -85,10 +114,10 @@ export function SimulationSummary({
         <li>
           Temperatura Final: <span className="font-medium">{finalTemperature.toFixed(1)} K</span>
         </li>
-        {additionalData.reactionRate && (
+        {hasInverseRateData && (
           <li>
             Velocidad de Reacción Final:{" "}
-            <span className="font-medium">{additionalData.reactionRate.toFixed(6)} [mol/L·({unitMeasure})]</span>
+            <span className="font-medium">{(1/maxInverseRate).toFixed(6)} [mol/L·({unitMeasure})]</span>
           </li>
         )}
         {additionalData.message && (

@@ -206,6 +206,7 @@ export default function ResultsDisplay({
           equilibriumMethod={equilibriumMethod}
           additionalData={additionalData}
           unitMeasure={unitMeasure}
+          data={simulationData}
         />
       </CardContent>
     </Card>

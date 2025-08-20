@@ -10,23 +10,20 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts"
-import { useMemo, useState } from "react" // Importar useMemo y useState
+import { useMemo, useState } from "react"
 
-// 1. Definir la interfaz para los datos de entrada
 interface InverseRateDataPoint {
-  time?: number // Opcional, si no se usa directamente aquí
+  time?: number 
   conversion: number
   inverseRate?: number
-  // Agrega otras propiedades que pueda tener tu punto de datos si es necesario
 }
 
 interface InverseRateChartProps {
-  data: InverseRateDataPoint[] // Usar la interfaz definida
+  data: InverseRateDataPoint[]
   unitMeasure: "min" | "seg"
 }
 
 export function InverseRateChart({ data, unitMeasure }: InverseRateChartProps) {
-  // Filtramos los datos una vez para asegurarnos de que tengan inverseRate y conversion > 0
   const validData = useMemo(
     () =>
       data.filter(
@@ -51,7 +48,6 @@ export function InverseRateChart({ data, unitMeasure }: InverseRateChartProps) {
     )
   }
 
-  // Lógica para el eje X (Conversion)
   const computedMinConversion = useMemo(
     () => Math.min(...validData.map((d) => d.conversion)),
     [validData],
@@ -61,7 +57,6 @@ export function InverseRateChart({ data, unitMeasure }: InverseRateChartProps) {
     [validData],
   )
 
-  // Estados para los controles del eje X
   const [xAxisMin, setXAxisMin] = useState<number>(
     Number(computedMinConversion.toFixed(2)),
   )
@@ -69,16 +64,14 @@ export function InverseRateChart({ data, unitMeasure }: InverseRateChartProps) {
     Number(computedMaxConversion.toFixed(2)),
   )
   const [xAxisTickInterval, setXAxisTickInterval] = useState<number>(() => {
-    // Calcular un intervalo inicial razonable, ej. 5 ticks
     const initialInterval = (computedMaxConversion - computedMinConversion) / 5
-    // Asegurarse de que el intervalo sea un número positivo y no cero
     return Number(initialInterval > 0 ? initialInterval.toFixed(2) : 0.1)
   })
 
-  // Generar ticks para el eje X basado en los estados
+ 
   const xTicks = useMemo(() => {
     if (xAxisTickInterval <= 0 || xAxisMax <= xAxisMin) {
-      return undefined // No generar ticks si el intervalo es inválido
+      return undefined 
     }
     const ticks = Array.from(
       {
@@ -86,14 +79,13 @@ export function InverseRateChart({ data, unitMeasure }: InverseRateChartProps) {
       },
       (_, i) => Number((xAxisMin + i * xAxisTickInterval).toFixed(2)),
     )
-    // Asegurarse de que el último tick sea xAxisMax si hay datos
+  
     if (ticks[ticks.length - 1] < xAxisMax) {
       ticks.push(Number(xAxisMax.toFixed(2)))
     }
     return ticks
   }, [xAxisMin, xAxisMax, xAxisTickInterval])
 
-  // Filtrar los datos que se muestran en el gráfico según el rango seleccionado por el usuario
   const filteredDataForChart = useMemo(
     () =>
       validData.filter(
@@ -103,7 +95,6 @@ export function InverseRateChart({ data, unitMeasure }: InverseRateChartProps) {
     [validData, xAxisMin, xAxisMax],
   )
 
-  // Lógica para el eje Y (Inverse Rate)
   const maxInverseRate = useMemo(
     () => Math.max(...validData.map((d) => d.inverseRate || 0)),
     [validData],
