@@ -13,6 +13,7 @@ export function Footer() {
             <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
           </div>
           <p className="text-slate-400 text-xs">Simulador de Reactores Batch  - Herramienta avanzada de Ingeniería Química</p>
+          <p className="text-slate-500 text-xs">Versión de la tesis (2025)</p>
         </div>
       </div>
     </footer>
