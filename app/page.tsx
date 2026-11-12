@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { EquilibriumWarningDialog } from "@/components/equilibirum.warning.dialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { V2Banner } from "@/components/v2-banner"
 
 
 export default function BatchReactorSimulator() {
@@ -74,6 +75,13 @@ export default function BatchReactorSimulator() {
   useEffect(() => {
     validateFields()
   }, [])
+
+  // Despierta el backend (Render) apenas se abre la página, mientras el usuario completa el formulario
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      fetch(process.env.NEXT_PUBLIC_API_URL).catch(() => {})
+    }
+  }, [])
   useEffect(() => {
     if (errorDetails) {
       setShowBackendError(true)
@@ -103,6 +111,8 @@ export default function BatchReactorSimulator() {
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold mb-6 text-center">Simulador de Reactor Batch (TAD)</h1>
+
+      <V2Banner />
 
       {equilibriumData && (
         <EquilibriumWarningDialog
